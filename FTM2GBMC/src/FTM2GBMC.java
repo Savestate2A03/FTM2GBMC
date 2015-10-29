@@ -22,7 +22,8 @@ public class FTM2GBMC {
     ArrayList<MacroPitch> pitchMacros;
     ArrayList<MacroDuty> dutyMacros;
     
-    
+    // Instruments
+    ArrayList<Instrument> instruments;
     
     public FTM2GBMC(ArrayList<String> textImport) {
         this.textImport = textImport;
