@@ -230,7 +230,9 @@ public class FTM2GBMC {
         sb.append("; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n");
         sb.append("#mode 0\n\n");
         sb.append("; -- Volume Macros --\n");
-        sb.append(sb_MacroVolume());
+        sb.append(sb_MacroVolume()).append("\n");
+        sb.append("; -- Duty Cycle Macros --\n");
+        sb.append(sb_MacroDuty()).append("\n");
         return sb.toString();
     }
    
@@ -272,10 +274,50 @@ public class FTM2GBMC {
                 sb.append(" ; Release of ").append(num).append("\n");
             }
         }
-        // build volume macros
         return sb;
     }
-    
+
+    private StringBuilder sb_MacroDuty() {
+        StringBuilder sb = new StringBuilder();
+        //#V0 {0, -1, -2, -3, [-4, -5, -6] 2,] 2}
+        for (MacroDuty d : dutyMacros) {
+            int num = d.getIdent();
+            sb.append("#X").append(num).append(" {");
+            int loopPoint = d.getValues().length;
+            if (d.getRelease() != -1)
+                loopPoint = d.getRelease();
+            for (int i=0; i<loopPoint; i++) {
+                if (i == d.getLoop())
+                    sb.append('[');
+                int value = d.getValues()[i];
+                sb.append(value);
+                if (i < loopPoint-1) {
+                    sb.append(", ");
+                } else if (d.getLoop() != -1)
+                    sb.append("] 2,] 2}\n");
+                else
+                    sb.append("}\n");
+            }
+            if (d.getRelease() != -1) {
+                sb.append("#X").append(num+64).append(" {");
+                for (int i=d.getRelease(); i<d.getValues().length; i++) {
+                    if (i == d.getLoop())
+                        sb.append('[');
+                    int value = d.getValues()[i];
+                    sb.append(value);
+                    if (i < d.getValues().length-1) {
+                        sb.append(", ");
+                    } else if (d.getLoop() != -1)
+                        sb.append("] 2,] 2}");
+                    else
+                    sb.append("}\n");
+                }
+                sb.append(" ; Release of ").append(num).append("\n");
+            }
+        }
+        return sb;
+    }
+
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.println("------------------------");
