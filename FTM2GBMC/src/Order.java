@@ -28,10 +28,12 @@ public class Order {
         return noise;
     }
     
-    public static Order orderBuilder(String line) {
+    public static Order orderBuilder(String line) throws Exception {
         // ORDER 0A : 01 05 03 02 02
         // 0     1  2 3  4  5  6  7
         String[] split = line.split("\\s+");
+        if (!split[0].equals("ORDER"))
+            throw new Exception ("Provided line was not an Order!");
         int pulse1   = Integer.parseInt(split[3], 16);
         int pulse2   = Integer.parseInt(split[4], 16);
         int triangle = Integer.parseInt(split[5], 16);
