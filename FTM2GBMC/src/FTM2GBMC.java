@@ -92,6 +92,14 @@ public class FTM2GBMC {
         return null;
     }
     
+    private Instrument getInstrumentById(int num) {
+        for (Instrument i : instruments) {
+            if (i.getIdent() == num)
+                return i;
+        }
+        return null;
+    }
+    
     private void buildFrames() throws Exception {
         System.out.println("Building frame list...");
         for (Order o : orders) {

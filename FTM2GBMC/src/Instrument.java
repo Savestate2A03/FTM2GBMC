@@ -32,6 +32,10 @@ public class Instrument {
         return duty;
     }
     
+    public int getIdent() {
+        return ident;
+    }
+    
     public String getName() {
         return name;
     }
