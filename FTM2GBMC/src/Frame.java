@@ -40,6 +40,9 @@ public class Frame {
             } catch (Exception e) { }
             if (note.equals("...")) {
                 note = "";
+            } else if (note.charAt(2) == '#') {
+                note = note.substring(0, 2).replaceAll("\\-", "");
+                note = note.replaceAll("\\#", "+");
             } else if (!note.equals("---") && !note.equals("===")) {
                 octave = Integer.parseInt(note.substring(2, 3));
                 note = note.substring(0, 2).replaceAll("\\-", "");
@@ -47,7 +50,7 @@ public class Frame {
             }
             String[] stringEffects = info[3].split("\\s+");
             Effect[] effects = Effect.effectsBuilder(stringEffects);
-            if (!(note.isEmpty() && (octave==-1) && (volume==-1) && (instrument==-1))) {
+            if (!(note.isEmpty() && (octave==-1) && (volume==-1) && (instrument==-1) && (effects.length==0))) {
                 Note builtNote = new Note(note, octave, instrument, volume, effects);
                 if (!frame.notes.isEmpty()) {
                     frame.notes.get(frame.notes.size()-1).setLength(noteLength);

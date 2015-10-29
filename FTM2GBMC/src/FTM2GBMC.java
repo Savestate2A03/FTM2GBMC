@@ -65,6 +65,14 @@ public class FTM2GBMC {
         return false;
     }
     
+    private Frame getFrameById(int num, ArrayList<Frame> frames) {
+        for (Frame f : frames) {
+            if (f.getIdentity() == num)
+                return f;
+        }
+        return null;
+    }
+    
     private void buildFrames() throws Exception {
         System.out.println("Building frame list...");
         for (Order o : orders) {
@@ -72,11 +80,11 @@ public class FTM2GBMC {
             if (!doesFrameExist(o.getPulse1(), pulse1))
                 pulse1.add(Frame.frameBuilder(0, o.getPulse1(), textImport));
             if (!doesFrameExist(o.getPulse2(), pulse2))
-                pulse2.add(Frame.frameBuilder(0, o.getPulse1(), textImport));
-            if (!doesFrameExist(o.getPulse1(), triangle))
-                triangle.add(Frame.frameBuilder(0, o.getTriangle(), textImport));
-            if (!doesFrameExist(o.getPulse1(), noise))
-                noise.add(Frame.frameBuilder(0, o.getNoise(), textImport));
+                pulse2.add(Frame.frameBuilder(1, o.getPulse2(), textImport));
+            if (!doesFrameExist(o.getTriangle(), triangle))
+                triangle.add(Frame.frameBuilder(2, o.getTriangle(), textImport));
+            if (!doesFrameExist(o.getNoise(), noise))
+                noise.add(Frame.frameBuilder(3, o.getNoise(), textImport));
         }
         System.out.println("...built " + (
                 pulse1.size() + pulse2.size() + triangle.size() + noise.size()
