@@ -34,7 +34,7 @@ public class Instrument {
         return name;
     }
     
-    public static Instrument buildInstrument(String macroLine) throws Exception {
+    public static Instrument instrumentBuilder(String macroLine) throws Exception {
         // INST2A03   7     6  -1   2  -1   3 "pitchy"
         // 0          1     2   3   4   5   6 7
         String[] split = macroLine.split("\\s+");

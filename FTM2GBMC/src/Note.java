@@ -1,17 +1,22 @@
+
+import java.util.ArrayList;
+
 public class Note {
     
     private final String note;
     private final int octave;
     private final int instrument;
-    private final int length;
-    private Note next;
+    private final int volume;
+    private int length;
+    private final Effect[] effects;
     
-    public Note(String note, int octave, int instrument, int length) {
-        next = null;
+    public Note(String note, int octave, int instrument, int volume, Effect[] effects) {
         this.note = note;
         this.octave = octave;
         this.instrument = instrument;
-        this.length = length;
+        this.volume = volume;
+        length = -1;
+        this.effects = effects;
     }
     
     public String getNote() {
@@ -26,15 +31,19 @@ public class Note {
         return instrument;
     }
     
+    public int getVolume() {
+        return volume;
+    }
+    
     public int getLength() {
         return length;
     }
     
-    public Note next() {
-        return next;
+    public Effect[] getEffects() {
+        return effects;
     }
     
-    public void setNext(Note next) {
-        this.next = next;
+    public void setLength(int length) {
+        this.length = length;
     }
 }
