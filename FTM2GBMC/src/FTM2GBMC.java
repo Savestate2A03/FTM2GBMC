@@ -50,6 +50,8 @@ public class FTM2GBMC {
         Charset encoding = Charset.defaultCharset();
         ArrayList<String> lines = (ArrayList<String>) Files.readAllLines(Paths.get(input), encoding);
         FTM2GBMC ftm2gbmc = new FTM2GBMC(lines);
+        Frame f = Frame.frameBuilder(1, 7, lines);
+        System.out.println(f);
     }
     
 }

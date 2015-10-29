@@ -5,10 +5,12 @@ public class Frame {
     
     private ArrayList<Note> notes;
     private int ident;
+    private int noteStart;
     
     public static Frame frameBuilder(int channel, int pattern, ArrayList<String> lines) throws Exception {
         Frame frame = new Frame();
         frame.notes = new ArrayList<>();
+        frame.noteStart = -1;
         int index = -1;
         String hex = Integer.toHexString(pattern);
         if (hex.length() <= 1)
@@ -50,6 +52,8 @@ public class Frame {
                 if (!frame.notes.isEmpty()) {
                     frame.notes.get(frame.notes.size()-1).setLength(noteLength);
                     noteLength = 0;
+                } else {
+                    frame.noteStart = noteLength;
                 }
                 frame.notes.add(builtNote);
             }
@@ -57,6 +61,8 @@ public class Frame {
         }
         if (!frame.notes.isEmpty())
             frame.notes.get(frame.notes.size()-1).setLength(noteLength);
+        else 
+            frame.noteStart = noteLength;
         
         return frame;
     }
@@ -72,6 +78,7 @@ public class Frame {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Buffer: ").append(noteStart).append("\n");
         for(Note n : notes) {
             String note = n.getNote();
             if (note.isEmpty())
