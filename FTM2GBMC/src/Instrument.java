@@ -4,13 +4,15 @@ public class Instrument {
     private final int arp;
     private final int pitch;
     private final int duty;
+    private final int ident;
     String name;
     
-    public Instrument(int v, int a, int p, int d, String n) {
+    public Instrument(int v, int a, int p, int d, int i, String n) {
         volume = v;
         arp    = a;
         pitch  = p;
         duty   = d;
+        ident  = i;
         name   = n;
     }
     
@@ -40,11 +42,12 @@ public class Instrument {
         String[] split = macroLine.split("\\s+");
         if (!split[0].equals("INST2A03"))
             throw new Exception("Provided line was not a FamiTracker instrument!");
+        int i = Integer.parseInt(split[1]);
         int v = Integer.parseInt(split[2]);
         int a = Integer.parseInt(split[3]);
         int p = Integer.parseInt(split[4]);
         int d = Integer.parseInt(split[6]);
-        return new Instrument(v, a, p, d, split[7].replaceAll("\\\"", ""));
+        return new Instrument(v, a, p, d, i, split[7].replaceAll("\\\"", ""));
     }
     
     @Override

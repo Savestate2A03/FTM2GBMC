@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 public class FTM2GBMC {
 
-    private final ArrayList<String> textImport;
+    private final ArrayList<String> text;
     
     // Song information
     private String songTitle;
@@ -37,11 +37,12 @@ public class FTM2GBMC {
     ArrayList<Order> orders;
     
     public FTM2GBMC(ArrayList<String> textImport) throws Exception {
-        this.textImport = textImport;
+        this.text = textImport;
         init();
         information();
         buildOrders();
         buildFrames();
+        buildInstruments();
     }
     
     private void init() {
@@ -55,6 +56,24 @@ public class FTM2GBMC {
         triangle = new ArrayList<>();
         noise = new ArrayList<>();
         orders = new ArrayList<>();
+    }
+    
+    private void buildInstruments() throws Exception {
+        int index = findText("INST2A03");
+        if (index == -1)
+            throw new Exception("No instruments found!");
+        System.out.println("Instruments found on line " + index);
+        System.out.println("Building instruments...");
+        while(!text.get(index).isEmpty()) {
+            String text = this.text.get(index);
+            if (!text.startsWith("INST2A03")) {
+                index++;
+                continue;
+            }
+            instruments.add(Instrument.instrumentBuilder(text));
+            index++;
+        }
+        System.out.println("...built " + instruments.size() + " instruments!");
     }
     
     private boolean doesFrameExist(int num, ArrayList<Frame> frames) {
@@ -78,21 +97,21 @@ public class FTM2GBMC {
         for (Order o : orders) {
             // Pulse 1 frames
             if (!doesFrameExist(o.getPulse1(), pulse1))
-                pulse1.add(Frame.frameBuilder(0, o.getPulse1(), textImport));
+                pulse1.add(Frame.frameBuilder(0, o.getPulse1(), text));
             if (!doesFrameExist(o.getPulse2(), pulse2))
-                pulse2.add(Frame.frameBuilder(1, o.getPulse2(), textImport));
+                pulse2.add(Frame.frameBuilder(1, o.getPulse2(), text));
             if (!doesFrameExist(o.getTriangle(), triangle))
-                triangle.add(Frame.frameBuilder(2, o.getTriangle(), textImport));
+                triangle.add(Frame.frameBuilder(2, o.getTriangle(), text));
             if (!doesFrameExist(o.getNoise(), noise))
-                noise.add(Frame.frameBuilder(3, o.getNoise(), textImport));
+                noise.add(Frame.frameBuilder(3, o.getNoise(), text));
         }
         System.out.println("...built " + (
                 pulse1.size() + pulse2.size() + triangle.size() + noise.size()
                 ) + " frames!");
-        System.out.println("Pulse 1 Frames:  " + pulse1.size());
-        System.out.println("Pulse 2 Frames:  " + pulse2.size());
-        System.out.println("Triangle Frames: " + triangle.size());
-        System.out.println("Noise Frames:    " + noise.size());
+        System.out.println(" Pulse 1 Frames:  " + pulse1.size());
+        System.out.println(" Pulse 2 Frames:  " + pulse2.size());
+        System.out.println(" Triangle Frames: " + triangle.size());
+        System.out.println(" Noise Frames:    " + noise.size());
     }
     
     private void buildOrders() throws Exception {
@@ -100,8 +119,8 @@ public class FTM2GBMC {
         if (ordersIndex == -1)
             throw new Exception("No orders found!");
         System.out.println("Found order list on line " + ordersIndex);
-        while(!textImport.get(ordersIndex).isEmpty()) {
-            orders.add(Order.orderBuilder(textImport.get(ordersIndex)));
+        while(!text.get(ordersIndex).isEmpty()) {
+            orders.add(Order.orderBuilder(text.get(ordersIndex)));
             ordersIndex++;
         }
         System.out.println("Total orders: " + orders.size());
@@ -109,17 +128,17 @@ public class FTM2GBMC {
     
     private void information() {
         // Set the title, author, copyright, speed, and tempo
-        songTitle = searchForLine("TITLE");
+        songTitle = firstFoundLine("TITLE");
         songTitle = songTitle.split("\\s+", 2)[1];
         songTitle = songTitle.substring(1, songTitle.length()-1);
         songTitle = songTitle.replaceAll("\\\"\\\"", "\"");
-        songAuthor = searchForLine("AUTHOR");
+        songAuthor = firstFoundLine("AUTHOR");
         songAuthor = songAuthor.split("\\s+")[1];
         songAuthor = songAuthor.substring(1, songAuthor.length()-1);
-        songCopyright = searchForLine("COPYRIGHT");
+        songCopyright = firstFoundLine("COPYRIGHT");
         songCopyright = songCopyright.split("\\s+")[1];
         songCopyright = songCopyright.substring(1, songCopyright.length()-1);
-        String trackInfo = searchForLine("TRACK");
+        String trackInfo = firstFoundLine("TRACK");
         //TRACK 128   2 135 "New song"
         String[] info = trackInfo.split("\\s+");
         songSpeed = Integer.parseInt(info[2]);
@@ -133,18 +152,18 @@ public class FTM2GBMC {
     }
     
     private int findText(String text) {
-        for(int i=0; i<textImport.size(); i++) {
-            if (textImport.get(i).startsWith(text))
+        for(int i=0; i<this.text.size(); i++) {
+            if (this.text.get(i).startsWith(text))
                 return i;
         }
         return -1;
     }
     
-    private String searchForLine(String text) {
+    private String firstFoundLine(String text) {
         int index = findText(text);
         if (index == -1)
             return "";
-        return textImport.get(index);
+        return this.text.get(index);
     }
     
     public static void main(String[] args) throws Exception {
