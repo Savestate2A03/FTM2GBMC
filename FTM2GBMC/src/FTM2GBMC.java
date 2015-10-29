@@ -28,7 +28,7 @@ public class FTM2GBMC {
         this.textImport = textImport;
     }
     
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.println("------------------------");
         System.out.println("|      Welcome to      |");
