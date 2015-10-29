@@ -27,4 +27,15 @@ public class Order {
     public int getNoise() {
         return noise;
     }
+    
+    public static Order orderBuilder(String line) {
+        // ORDER 0A : 01 05 03 02 02
+        // 0     1  2 3  4  5  6  7
+        String[] split = line.split("\\s+");
+        int pulse1   = Integer.parseInt(split[3], 16);
+        int pulse2   = Integer.parseInt(split[4], 16);
+        int triangle = Integer.parseInt(split[5], 16);
+        int noise    = Integer.parseInt(split[6], 16);
+        return new Order(pulse1, pulse2, triangle, noise);
+    }
 }
