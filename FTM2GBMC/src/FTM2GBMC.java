@@ -1,5 +1,5 @@
 
-import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -214,18 +214,86 @@ public class FTM2GBMC {
         return this.text.get(index);
     }
     
+    public String build() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("; ============================\n");
+        sb.append("; FILE GENERATED WITH FTM2GBMC\n");
+        sb.append("; ============================\n");
+        sb.append("; FTM2GBMC created by Savestate!\n\n");
+        sb.append("; -- INFO --\n");
+        sb.append("#TITLE \"").append(songTitle.replaceAll("\\\"", "''")).append("\"\n");
+        sb.append("#AUTHOR \"").append(songAuthor.replaceAll("\\\"", "''")).append("\"\n");
+        sb.append("#COPYRIGHT \"").append(songCopyright.replaceAll("\\\"", "''")).append("\"\n\n");
+        sb.append("; -- WAVE Macros --\n");
+        sb.append("#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n");
+        sb.append("; -- Export Mode --\n");
+        sb.append("; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n");
+        sb.append("#mode 0\n\n");
+        sb.append("; -- Volume Macros --\n");
+        sb.append(sb_MacroVolume());
+        return sb.toString();
+    }
+   
+    private StringBuilder sb_MacroVolume() {
+        StringBuilder sb = new StringBuilder();
+        //#V0 {0, -1, -2, -3, [-4, -5, -6] 2,] 2}
+        for (MacroVolume v : volumeMacros) {
+            int num = v.getIdent();
+            sb.append("#V").append(num).append(" {");
+            int loopPoint = v.getValues().length;
+            if (v.getRelease() != -1)
+                loopPoint = v.getRelease();
+            for (int i=0; i<loopPoint; i++) {
+                if (i == v.getLoop())
+                    sb.append('[');
+                int value = v.getValues()[i];
+                sb.append(value - 15);
+                if (i < loopPoint-1) {
+                    sb.append(", ");
+                } else if (v.getLoop() != -1)
+                    sb.append("] 2,] 2}\n");
+                else
+                    sb.append("}\n");
+            }
+            if (v.getRelease() != -1) {
+                sb.append("#V").append(num+64).append(" {");
+                for (int i=v.getRelease(); i<v.getValues().length; i++) {
+                    if (i == v.getLoop())
+                        sb.append('[');
+                    int value = v.getValues()[i];
+                    sb.append(value - 15);
+                    if (i < v.getValues().length-1) {
+                        sb.append(", ");
+                    } else if (v.getLoop() != -1)
+                        sb.append("] 2,] 2}");
+                    else
+                    sb.append("}\n");
+                }
+                sb.append(" ; Release of ").append(num).append("\n");
+            }
+        }
+        // build volume macros
+        return sb;
+    }
+    
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         System.out.println("------------------------");
         System.out.println("|      Welcome to      |");
         System.out.println("| Savestate's FTM2GBMC |");
         System.out.println("------------------------");
-        System.out.print("FamiTracker text export --> ");
+        System.out.print("[Open] FamiTracker text export --> ");
         String input = sc.nextLine();
         input = input.replaceAll("\\\"", "");
         Charset encoding = Charset.defaultCharset();
         ArrayList<String> lines = (ArrayList<String>) Files.readAllLines(Paths.get(input), encoding);
         FTM2GBMC ftm2gbmc = new FTM2GBMC(lines);
+        System.out.print("[Save] GBMC .mml filename --> ");
+        input = sc.nextLine();
+        String output = ftm2gbmc.build();
+        PrintWriter out = new PrintWriter(input);
+        out.print(output);
+        out.close();
     }
     
 }

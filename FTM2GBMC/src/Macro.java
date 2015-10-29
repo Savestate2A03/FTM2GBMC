@@ -1,13 +1,19 @@
 public class Macro {
     
-    protected final int[] values;
-    protected final int loopPoint;
-    protected final int releasePoint;
+    private final int[] values;
+    private final int loopPoint;
+    private final int releasePoint;
+    private final int ident;
     
-    public Macro(int[] values, int loopPoint, int releasePoint) {
+    public Macro(int[] values, int loopPoint, int releasePoint, int ident) {
         this.values = values;
         this.loopPoint = loopPoint;
         this.releasePoint = releasePoint;
+        this.ident = ident;
+    }
+    
+    public int getIdent() {
+        return ident;
     }
     
     public int[] getValues() {

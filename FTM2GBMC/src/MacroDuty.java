@@ -3,8 +3,8 @@ import java.util.Arrays;
 
 public class MacroDuty extends Macro {
     
-    public MacroDuty(int[] values, int loopPoint, int releasePoint) {
-        super(values, loopPoint, releasePoint);
+    public MacroDuty(int[] values, int loopPoint, int releasePoint, int ident) {
+        super(values, loopPoint, releasePoint, ident);
     }
     
     public static MacroDuty dutyMacroBuilder(String macroLine) throws Exception {
@@ -15,6 +15,7 @@ public class MacroDuty extends Macro {
             throw new Exception("Provided macro is not a duty macro!");
         int loopPoint    = Integer.parseInt(split[3]);
         int releasePoint = Integer.parseInt(split[4]);
+        int ident        = Integer.parseInt(split[2]);
         String[] values = Arrays.copyOfRange(split, 7, split.length);
         int[] intValues = new int[values.length];
         for (int i=0; i<values.length; i++) {
@@ -24,7 +25,7 @@ public class MacroDuty extends Macro {
             if (intValues[i] < 0)
                 throw new Exception("Duty cycle out of range! (less than 0)");
         }
-        return new MacroDuty(intValues, loopPoint, releasePoint);
+        return new MacroDuty(intValues, loopPoint, releasePoint, ident);
     }
 
     
