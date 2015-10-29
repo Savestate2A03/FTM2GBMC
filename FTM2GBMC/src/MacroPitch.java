@@ -7,7 +7,7 @@ public class MacroPitch extends Macro {
         super(values, loopPoint, releasePoint);
     }
 
-    public static MacroPitch volumeMacroBuilder(String macroLine) throws Exception {
+    public static MacroPitch pitchMacroBuilder(String macroLine) throws Exception {
         String[] split = macroLine.split("\\s+");
         if (!split[0].equals("MACRO"))
             throw new Exception("Provided string is not a FamiTracker macro!");

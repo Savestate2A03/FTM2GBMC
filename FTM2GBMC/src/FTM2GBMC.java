@@ -42,6 +42,7 @@ public class FTM2GBMC {
         information();
         buildOrders();
         buildFrames();
+        buildMacros();
         buildInstruments();
     }
     
@@ -56,6 +57,45 @@ public class FTM2GBMC {
         triangle = new ArrayList<>();
         noise = new ArrayList<>();
         orders = new ArrayList<>();
+    }
+    
+    private void buildMacros() throws Exception {
+        int index = findText("MACRO");
+        if (index == -1) {
+            System.out.println("No macros found!");
+            return;
+        }
+        System.out.println("Macros found on line " + index);
+        System.out.println("Building macro list...");
+        while(!text.get(index).isEmpty()) {
+            String line = text.get(index);
+            int macro = Integer.parseInt(text.get(index).split("\\s+")[1]);
+            switch (macro) {
+                case 0: 
+                    volumeMacros.add(MacroVolume.volumeMacroBuilder(line));
+                    break;
+                case 1:
+                    arpeggioMacros.add(MacroArp.arpMacroBuilder(line));
+                    break;
+                case 2:
+                    pitchMacros.add(MacroPitch.pitchMacroBuilder(line));
+                    break;
+                case 4:
+                    dutyMacros.add(MacroDuty.dutyMacroBuilder(line));
+                    break;
+            }
+            index++;
+        }
+        System.out.println("...built " + (
+                volumeMacros.size() +
+                arpeggioMacros.size() +
+                pitchMacros.size() + 
+                dutyMacros.size()
+                ) + " macros!");
+        System.out.println(" Volume Macros:   " + volumeMacros.size());
+        System.out.println(" Arpeggio Macros: " + arpeggioMacros.size());
+        System.out.println(" Pitch Macros:    " + pitchMacros.size());
+        System.out.println(" Duty Macros:     " + dutyMacros.size());
     }
     
     private void buildInstruments() throws Exception {
@@ -126,7 +166,7 @@ public class FTM2GBMC {
         int ordersIndex = findText("ORDER");
         if (ordersIndex == -1)
             throw new Exception("No orders found!");
-        System.out.println("Found order list on line " + ordersIndex);
+        System.out.println("Order list found on line " + ordersIndex);
         while(!text.get(ordersIndex).isEmpty()) {
             orders.add(Order.orderBuilder(text.get(ordersIndex)));
             ordersIndex++;
