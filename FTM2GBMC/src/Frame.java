@@ -12,7 +12,7 @@ public class Frame {
         frame.notes = new ArrayList<>();
         frame.noteStart = -1;
         int index = -1;
-        String hex = Integer.toHexString(pattern);
+        String hex = Integer.toHexString(pattern).toUpperCase();
         if (hex.length() <= 1)
             hex = "0" + hex;
         for (int i = 0; i < lines.size(); i++) {
@@ -22,7 +22,7 @@ public class Frame {
             }
         }
         if (index == -1)
-            throw new Exception("Specified pattern not found!");
+            throw new Exception("Specified pattern " + pattern + " (" + hex + ") not found!");
         frame.ident = pattern;
         int noteLength = 0;
         for(; !lines.get(index).isEmpty(); index++) {
