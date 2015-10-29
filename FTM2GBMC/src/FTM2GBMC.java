@@ -25,6 +25,15 @@ public class FTM2GBMC {
     // Instruments
     ArrayList<Instrument> instruments;
     
+    // Channels
+    ArrayList<Frame> pulse1;
+    ArrayList<Frame> pulse2;
+    ArrayList<Frame> triangle;
+    ArrayList<Frame> noise;
+    
+    // List of Frames
+    ArrayList<Order> orders;
+    
     public FTM2GBMC(ArrayList<String> textImport) {
         this.textImport = textImport;
     }
