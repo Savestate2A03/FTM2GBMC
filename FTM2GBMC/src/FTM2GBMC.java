@@ -308,6 +308,7 @@ public class FTM2GBMC {
                 pulseFrame = o.getPulse2();
             // Get the frame, contains the note array
             Frame frame = getFrameById(pulseFrame, frames);
+            boolean forceInstrumentCheck = false;
             // If we're not on the first frame, and there's a note buffer...
             // append the buffer to the previous note!
             if (frame.getBuffer() != 0 && !firstFrame)
@@ -334,6 +335,52 @@ public class FTM2GBMC {
                     sb.append(" o").append(n.getOctave()).append(' ');
                 // if the current note's instrument is not blank and not equal to the 
                 // previous note's instrument, we need to update the instruments!
+                // Effects
+                if (n.getEffects().length > 0) {
+                    // if there are effects...
+                    for (Effect e : n.getEffects()) {
+                        char effect = e.getType().charAt(0);
+                        switch (effect) {
+                            case 'A':
+                                sb.append(" k15,");
+                                boolean direction = (e.getParam(1)-e.getParam(0) > 0);
+                                if (direction)
+                                    sb.append('0');
+                                else
+                                    sb.append('1');
+                                sb.append(',');
+                                int speed = Math.abs(e.getParam(1)-e.getParam(0));
+                                if (!(speed == 0)) {
+                                    speed = speed / 2;
+                                    speed = 7-speed;
+                                    if (speed == 0)
+                                        speed = 1;
+                                }
+                                sb.append(speed);
+                                break;
+                            case 'V':
+                                forceInstrumentCheck = true;
+                                sb.append(" x");
+                                sb.append(e.getParam(1));
+                                break;
+                        }
+                    }
+                }
+                if (forceInstrumentCheck && (previousNote.getInstrument() != -1)) {
+                    Instrument instrument = getInstrumentById(previousNote.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
+                    MacroPitch   pitch = getPitchMacroById(instrument.getPitch());
+                    MacroDuty     duty = getDutyMacroById(instrument.getDuty());
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                    // set the pitch macro
+                    if (pitch != null)
+                        sb.append(sb_pitchMML(pitch));
+                    // set the duty macro
+                    if (duty != null)
+                        sb.append(sb_dutyMML(duty));
+                }
                 if (n.getInstrument() != -1 && previousNote.getInstrument() != n.getInstrument()) {
                     Instrument instrument = getInstrumentById(n.getInstrument());
                     MacroVolume volume = getVolumeMacroById(instrument.getVolume());
