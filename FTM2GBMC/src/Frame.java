@@ -78,6 +78,10 @@ public class Frame {
         return notes;
     }
     
+    public int getBuffer() {
+        return noteStart;
+    }
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -140,6 +140,38 @@ public class FTM2GBMC {
         return null;
     }
     
+    private MacroVolume getVolumeMacroById(int num) {
+        for (MacroVolume i : volumeMacros) {
+            if (i.getIdent() == num)
+                return i;
+        }
+        return null;
+    }
+    
+    private MacroArp getArpMacroById(int num) {
+        for (MacroArp i : arpeggioMacros) {
+            if (i.getIdent() == num)
+                return i;
+        }
+        return null;
+    }
+    
+    private MacroDuty getDutyMacroById(int num) {
+        for (MacroDuty i : dutyMacros) {
+            if (i.getIdent() == num)
+                return i;
+        }
+        return null;
+    }
+    
+    private MacroPitch getPitchMacroById(int num) {
+        for (MacroPitch i : pitchMacros) {
+            if (i.getIdent() == num)
+                return i;
+        }
+        return null;
+    }
+    
     private void buildFrames() throws Exception {
         System.out.println("Building frame list...");
         for (Order o : orders) {
@@ -214,7 +246,7 @@ public class FTM2GBMC {
         return this.text.get(index);
     }
     
-    public String build() {
+    public String build() throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("; ============================\n");
         sb.append("; FILE GENERATED WITH FTM2GBMC\n");
@@ -235,9 +267,170 @@ public class FTM2GBMC {
         sb.append(sb_MacroDuty()).append("\n");
         sb.append("; -- Pitch Macros --\n");
         sb.append(sb_MacroPitch()).append("\n");
+        sb.append(" -- Tempo (temp unfinished) --\n");
+        sb.append("'ABCD t128 T243\n\n");
+        sb.append(sb_PulseChannel(0));
         return sb.toString();
     }
    
+    private StringBuilder sb_PulseChannel(int channel) throws Exception {
+        ArrayList<Frame> frames = null;
+        char chan = 0;
+        StringBuilder sb = new StringBuilder();
+        if (channel != 0 && channel != 1)
+            throw new Exception("Provided channel (" + channel + ") doesn't exist!");
+        switch (channel) {
+            case 0:
+                chan = 'A';
+                frames = pulse1;
+                break;
+            case 1:
+                chan = 'B';
+                frames = pulse2;
+                break;
+        }
+        sb.append('\'').append(chan).append(' ');
+        //64th notes is the smallest unit of time
+        boolean firstFrame = true;
+        // First note is a blank note.
+        Note previousNote = new Note("...", -1, -1, -1, new Effect[0]);
+        // Go through all the orders
+        for(Order o : orders) {
+            int pulseFrame;
+            if (channel == 0) 
+                pulseFrame = o.getPulse1();
+            else
+                pulseFrame = o.getPulse2();
+            // Get the frame, contains the note array
+            Frame frame = getFrameById(pulseFrame, frames);
+            // If we're not on the first frame, and there's a note buffer...
+            // append the buffer to the previous note!
+            if (frame.getBuffer() != 0 && !firstFrame)
+                sb.append('^').append(getNoteLength(frame.getBuffer()));
+            // if we're on the first frame, we'll start out with a rest
+            // equal to the length of the buffer.
+            if (firstFrame) {
+                if (frame.getBuffer() != 0)
+                    sb.append('r').append(getNoteLength(frame.getBuffer()));
+            }
+            // if we're not on the first frame and there's no buffer,
+            // lets make a new line for sanity's sake.
+            if (!firstFrame && frame.getBuffer() == 0)
+                sb.append("\n").append('\'').append(chan).append(' ');
+            // an iterator through all the notes...
+            for (int i=0; i<frame.getNotes().size(); i++) {
+                // get the current note
+                Note n = frame.getNotes().get(i);
+                // if the note has a volume set, push it to the output
+                if (n.getVolume() != -1)
+                    sb.append(" v").append(n.getVolume()).append(' ');
+                // if there's an octave set (and it's not the same as the previous note) , push it to the output
+                if (n.getOctave() != -1 && previousNote.getOctave() != n.getOctave())
+                    sb.append(" o").append(n.getOctave()).append(' ');
+                // if the current note's instrument is not blank and not equal to the 
+                // previous note's instrument, we need to update the instruments!
+                if (n.getInstrument() != -1 && previousNote.getInstrument() != n.getInstrument()) {
+                    Instrument instrument = getInstrumentById(n.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
+                    MacroPitch   pitch = getPitchMacroById(instrument.getPitch());
+                    MacroDuty     duty = getDutyMacroById(instrument.getDuty());
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                    else
+                        sb.append(" zv0,0,0");
+                    // set the pitch macro
+                    if (pitch != null)
+                        sb.append(sb_pitchMML(pitch));
+                    else
+                        sb.append(" zf0,0,0");
+                    // set the duty macro
+                    if (duty != null)
+                        sb.append(sb_dutyMML(duty));
+                    else
+                        sb.append(" zw0,0,0");
+                }
+                // if the current note is empty (which means something else was set)
+                // we slur it and set the length to the empty note.
+                if (n.getNote().isEmpty()) {
+                    sb.append(" &");
+                    sb.append(previousNote.getNote());
+                    sb.append(n.getLength());
+                } else if (n.getNote().equals("---")) {
+                    // if it's a note cut...
+                    sb.append(" r").append(getNoteLength(n.getLength()));
+                } else if (n.getNote().equals("===")) {
+                    // if it's a note release
+                    Instrument instrument = getInstrumentById(n.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
+                    MacroPitch   pitch = getPitchMacroById(instrument.getPitch());
+                    MacroDuty     duty = getDutyMacroById(instrument.getDuty());
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                    // set the pitch macro
+                    if (pitch != null)
+                        sb.append(sb_pitchMML(pitch));
+                    // set the duty macro
+                    if (duty != null)
+                        sb.append(sb_dutyMML(duty));
+                    // and send the note to the output.
+                    sb.append(' ');
+                    sb.append(previousNote.getNote().toLowerCase()).append(getNoteLength(n.getLength()));
+                } else {
+                    // otherwise we'll output the note like normal
+                    sb.append(' ');
+                    sb.append(n.getNote().toLowerCase()).append(getNoteLength(n.getLength()));
+                }
+                // if the note is not a cut or note-off, then we will
+                // set it equal to the previous note.
+                if (!(n.getNote().equals("===") || n.getNote().equals("---")))
+                    previousNote = n;
+            }
+            firstFrame = false;
+        }
+        return sb;
+    }
+    
+    private StringBuilder sb_volumeMML(MacroVolume v) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" zv");
+        sb.append(v.getIdent());
+        sb.append(",1,0");
+        return sb;
+    }
+    
+    private StringBuilder sb_pitchMML(MacroPitch p) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" zf");
+        sb.append(p.getIdent());
+        sb.append(",1,0");
+        return sb;
+    }
+    
+    private StringBuilder sb_dutyMML(MacroDuty d) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" zw");
+        sb.append(d.getIdent());
+        sb.append(",1,0");
+        return sb;
+    }
+    
+    private String getNoteLength(int length) {
+        String s = "";
+        for (int i=0; i<length; i++) {
+            s = s + "64^";
+        }
+        s = s.substring(0, s.length()-1);
+        s = s.replaceAll("\\^64\\^64", "^32");
+        s = s.replaceAll("\\^32\\^32", "^16");
+        s = s.replaceAll("\\^16\\^16", "^8");
+        s = s.replaceAll("\\^8\\^8", "^4");
+        s = s.replaceAll("\\^4\\^4", "^2");
+        s = s.replaceAll("\\^2\\^2", "^1");
+        return s;
+    }
+    
     private StringBuilder sb_MacroVolume() {
         StringBuilder sb = new StringBuilder();
         //#V0 {0, -1, -2, -3, [-4, -5, -6] 2,] 2}
