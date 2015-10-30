@@ -327,6 +327,9 @@ public class FTM2GBMC {
                 sb.append("\n").append('\'').append(chan).append(' ');
             // an iterator through all the notes...
             for (int i=0; i<frame.getNotes().size(); i++) {
+                // note slide stuff
+                int slideAmount = 0;
+                // ---
                 // get the current note
                 Note n = frame.getNotes().get(i);
                 // Effects
@@ -365,6 +368,12 @@ public class FTM2GBMC {
                                 sb.append(" x");
                                 sb.append(e.getParam(1));
                                 prevDutyCycle = e.getParam(1);
+                                break;
+                            case 'Q':
+                                slideAmount = e.getParam(1);
+                                break;
+                            case 'R': 
+                                slideAmount = -e.getParam(1);
                                 break;
                         }
                     }
@@ -422,8 +431,20 @@ public class FTM2GBMC {
                 // we slur it and set the length to the empty note.
                 if (n.getNote().isEmpty()) {
                     sb.append(" & ");
-                    sb.append(previousNote.getNote().toLowerCase());
-                    sb.append(getNoteLength(n.getLength()));
+                    if (slideAmount != 0) {
+                        sb.append(" {");
+                        sb.append(previousNote.getNote().toLowerCase());
+                        sb.append(',');
+                        int noteNum = noteToNum(previousNote.getNote().toLowerCase());
+                        noteNum += slideAmount;
+                        String note = numToNote(noteNum);
+                        sb.append(note);
+                        sb.append('}');
+                        sb.append(getNoteLength(n.getLength()));
+                    } else {
+                        sb.append(previousNote.getNote().toLowerCase());
+                        sb.append(getNoteLength(n.getLength()));
+                    }
                 } else if (n.getNote().equals("---")) {
                     // if it's a note cut...
                     sb.append(" r").append(getNoteLength(n.getLength()));
@@ -445,6 +466,16 @@ public class FTM2GBMC {
                     // and send the note to the output.
                     sb.append(' ');
                     sb.append(previousNote.getNote().toLowerCase()).append(getNoteLength(n.getLength()));
+                } else if (slideAmount != 0) {
+                    sb.append(" {");
+                    sb.append(n.getNote().toLowerCase());
+                    sb.append(',');
+                    int noteNum = noteToNum(n.getNote().toLowerCase());
+                    noteNum += slideAmount;
+                    String note = numToNote(noteNum);
+                    sb.append(note);
+                    sb.append('}');
+                    sb.append(getNoteLength(n.getLength()));
                 } else {
                     // otherwise we'll output the note like normal
                     sb.append(' ');
@@ -458,6 +489,87 @@ public class FTM2GBMC {
             firstFrame = false;
         }
         return sb;
+    }
+    
+    private int noteToNum(String note) {
+        switch (note) {
+            case "c":
+                return 0;
+            case "c+":
+                return 1;
+            case "d":
+                return 2;
+            case "d+":
+                return 3;
+            case "e":
+                return 4;
+            case "f":
+                return 5;
+            case "f+":
+                return 6;
+            case "g":
+                return 7;
+            case "g+":
+                return 8;
+            case "a":
+                return 9;
+            case "a+":
+                return 10;
+            case "b":
+                return 11;
+        }
+        return -1;
+    }
+    
+    private String numToNote(int num) {
+        String oct = "";
+        String deoct = "";
+        if (num < 0) {
+            oct = "<";
+            deoct = ">";
+        }
+        if (num <= -12) {
+            oct = "<<";
+            deoct = ">>";
+        }
+        if (num >= 12) {
+            oct = ">";
+            deoct = "<";
+        }
+        if (num >= 24) {
+            oct = ">>";
+            deoct = "<<";
+        }
+        num = num % 12;
+        if (num < 0)
+            num += 12;
+        switch (num) {
+            case 0:
+                return oct + "c" + deoct;
+            case 1:
+                return oct + "c+" + deoct;
+            case 2:
+                return oct + "d" + deoct;
+            case 3:
+                return oct + "d+" + deoct;
+            case 4:
+                return oct + "e" + deoct;
+            case 5:
+                return oct + "f" + deoct;
+            case 6:
+                return oct + "f+" + deoct;
+            case 7:
+                return oct + "g" + deoct;
+            case 8:
+                return oct + "g+" + deoct;
+            case 9:
+                return oct + "a" + deoct;
+            case 10:
+                return oct + "a+" + deoct;
+            case 11:
+                return oct + "b" + deoct;
+        }
+        return "";
     }
     
     private StringBuilder sb_volumeMML(MacroVolume v) {
