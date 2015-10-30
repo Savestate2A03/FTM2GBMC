@@ -25,6 +25,7 @@ public class Frame {
             throw new Exception("Specified pattern " + pattern + " (" + hex + ") not found!");
         frame.ident = pattern;
         int noteLength = 0;
+        boolean firstNote = true;
         for(; !lines.get(index).isEmpty(); index++) {
             String[] channels = lines.get(index).trim().split(":");
             String[] info = channels[1+channel].trim().split("\\s+", 4);
@@ -54,10 +55,10 @@ public class Frame {
                 Note builtNote = new Note(note, octave, instrument, volume, effects);
                 if (!frame.notes.isEmpty()) {
                     frame.notes.get(frame.notes.size()-1).setLength(noteLength);
-                    noteLength = 0;
                 } else {
                     frame.noteStart = noteLength;
                 }
+                noteLength = 0;
                 frame.notes.add(builtNote);
             }
             noteLength++;

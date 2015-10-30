@@ -263,13 +263,18 @@ public class FTM2GBMC {
         sb.append("#mode 0\n\n");
         sb.append("; -- Volume Macros --\n");
         sb.append(sb_MacroVolume()).append("\n");
+        sb.append("#V127 {15,\\} ; Default Macro\n");
         sb.append("; -- Duty Cycle Macros --\n");
         sb.append(sb_MacroDuty()).append("\n");
+        sb.append("#X127 {0,\\} ; Default Macro\n");
         sb.append("; -- Pitch Macros --\n");
         sb.append(sb_MacroPitch()).append("\n");
+        sb.append("#F127 {0,\\} ; Default Macro\n");
         sb.append("; -- Tempo (temp unfinished) --\n");
-        sb.append("'ABCD t128 T243\n\n");
+        sb.append("'ABCD t128 T205\n\n");
         sb.append(sb_PulseChannel(0));
+        sb.append("\n\n");
+        sb.append(sb_PulseChannel(1));
         return sb.toString();
     }
    
@@ -289,7 +294,7 @@ public class FTM2GBMC {
                 frames = pulse2;
                 break;
         }
-        sb.append('\'').append(chan).append(' ');
+        sb.append('\'').append(chan).append(' ').append(" v15 ");
         //64th notes is the smallest unit of time
         boolean firstFrame = true;
         // First note is a blank note.
@@ -338,17 +343,17 @@ public class FTM2GBMC {
                     if (volume != null)
                         sb.append(sb_volumeMML(volume));
                     else
-                        sb.append(" zv0,0,0");
+                        sb.append(" zv127,0,0");
                     // set the pitch macro
                     if (pitch != null)
                         sb.append(sb_pitchMML(pitch));
                     else
-                        sb.append(" zf0,0,0");
+                        sb.append(" zf127,0,0");
                     // set the duty macro
                     if (duty != null)
                         sb.append(sb_dutyMML(duty));
                     else
-                        sb.append(" zw0,0,0");
+                        sb.append(" zw127,0,0");
                 }
                 // if the current note is empty (which means something else was set)
                 // we slur it and set the length to the empty note.
@@ -450,7 +455,7 @@ public class FTM2GBMC {
                 } else if (v.getLoop() != -1)
                     sb.append(",] 2,] 2}\n");
                 else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
             }
             if (v.getRelease() != -1) {
                 sb.append("#V").append(num+64).append(" {");
@@ -464,7 +469,7 @@ public class FTM2GBMC {
                     } else if (v.getLoop() != -1)
                         sb.append(",] 2,] 2}");
                     else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
                 }
                 sb.append(" ; Release of ").append(num).append("\n");
             }
@@ -491,7 +496,7 @@ public class FTM2GBMC {
                 } else if (d.getLoop() != -1)
                     sb.append(",] 2,] 2}\n");
                 else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
             }
             if (d.getRelease() != -1) {
                 sb.append("#X").append(num+64).append(" {");
@@ -505,7 +510,7 @@ public class FTM2GBMC {
                     } else if (d.getLoop() != -1)
                         sb.append(",] 2,] 2}");
                     else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
                 }
                 sb.append(" ; Release of ").append(num).append("\n");
             }
@@ -532,7 +537,7 @@ public class FTM2GBMC {
                 } else if (p.getLoop() != -1)
                     sb.append(",] 2,] 2}\n");
                 else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
             }
             if (p.getRelease() != -1) {
                 sb.append("#F").append(num+64).append(" {");
@@ -546,7 +551,7 @@ public class FTM2GBMC {
                     } else if (p.getLoop() != -1)
                         sb.append("] 2,] 2}");
                     else
-                    sb.append("}\n");
+                    sb.append(",\\}\n");
                 }
                 sb.append(" ; Release of ").append(num).append("\n");
             }
