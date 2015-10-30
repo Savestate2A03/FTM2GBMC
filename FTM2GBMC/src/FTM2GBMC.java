@@ -277,6 +277,8 @@ public class FTM2GBMC {
         sb.append(sb_PulseChannel(1));
         sb.append("\n\n");
         sb.append(sb_TriangleChannel());
+        sb.append("\n\n");
+        sb.append(sb_NoiseChannel());
         return sb.toString();
     }
    
@@ -640,6 +642,137 @@ public class FTM2GBMC {
         return sb;
     }
     
+    private StringBuilder sb_NoiseChannel() throws Exception {
+        ArrayList<Frame> frames = noise;
+        char chan = 'D';
+        StringBuilder sb = new StringBuilder();
+        sb.append('\'').append(chan).append(' ').append(" v15 ");
+        //64th notes is the smallest unit of time
+        boolean firstFrame = true;
+        int prevDutyCycle = 0;
+        boolean resetDutyCycle = true;
+        // First note is a blank note.
+        Note previousNote = new Note("r", -1, -1, -1, new Effect[0]);
+        // Go through all the orders
+        for(Order o : orders) {
+            int noiseFrame = o.getNoise();
+            // Get the frame, contains the note array
+            Frame frame = getFrameById(noiseFrame, frames);
+            boolean forceInstrumentCheck = false;
+            // If we're not on the first frame, and there's a note buffer...
+            // append the buffer to the previous note!
+            if (frame.getBuffer() != 0 && !firstFrame)
+                sb.append('^').append(getNoteLength(frame.getBuffer()));
+            // if we're on the first frame, we'll start out with a rest
+            // equal to the length of the buffer.
+            if (firstFrame) {
+                if (frame.getBuffer() != 0)
+                    sb.append('r').append(getNoteLength(frame.getBuffer()));
+            }
+            // if we're not on the first frame and there's no buffer,
+            // lets make a new line for sanity's sake.
+            if (!firstFrame && frame.getBuffer() == 0)
+                sb.append("\n").append('\'').append(chan).append(' ');
+            // an iterator through all the notes...
+            for (int i=0; i<frame.getNotes().size(); i++) {
+                // get the current note
+                Note n = frame.getNotes().get(i);
+                // Effects
+                if (n.getEffects().length > 0) {
+                    // if there are effects...
+                    for (Effect e : n.getEffects()) {
+                        char effect = e.getType().charAt(0);
+                        switch (effect) {
+                            case 'A':
+                                sb.append(" k");
+                                if (n.getVolume() == -1) {
+                                    if (previousNote.getVolume() == -1)
+                                        break;
+                                    sb.append(previousNote.getVolume());
+                                } else {
+                                    sb.append(n.getVolume());
+                                }
+                                sb.append(",");
+                                boolean direction = (e.getParam(1)-e.getParam(0) > 0);
+                                if (direction)
+                                    sb.append('0');
+                                else
+                                    sb.append('1');
+                                sb.append(',');
+                                int speed = Math.abs(e.getParam(1)-e.getParam(0));
+                                if (!(speed == 0)) {
+                                    speed = speed / 2;
+                                    speed = 7-speed;
+                                    if (speed == 0)
+                                        speed = 1;
+                                }
+                                sb.append(speed);
+                                break;
+                        }
+                    }
+                }
+                // if the note has a volume set, push it to the output
+                if (n.getVolume() != -1)
+                    sb.append(" v").append(n.getVolume()).append(' ');
+                // if the current note's instrument is not blank and not equal to the 
+                // previous note's instrument, we need to update the instruments!
+                if (forceInstrumentCheck && (previousNote.getInstrument() != -1)) {
+                    Instrument instrument = getInstrumentById(previousNote.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                }
+                if (n.getInstrument() != -1 && previousNote.getInstrument() != n.getInstrument()) {
+                    Instrument instrument = getInstrumentById(n.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                    else
+                        sb.append(" zv127,0,0");
+                }
+                // if the current note is empty (which means something else was set)
+                // we slur it and set the length to the empty note.
+                if (n.getNote().isEmpty()) {
+                    sb.append(" & ");
+                    sb.append(noiseFtm2Gbmc(previousNote.getNote().toLowerCase()));
+                    sb.append(getNoteLength(n.getLength()));
+                } else if (n.getNote().equals("---")) {
+                    // if it's a note cut...
+                    sb.append(" r").append(getNoteLength(n.getLength()));
+                } else if (n.getNote().equals("===")) {
+                    // if it's a note release
+                    Instrument instrument = getInstrumentById(previousNote.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume() + 64);
+                    // set the volume macro
+                    if (volume != null)
+                        sb.append(sb_volumeMML(volume));
+                    // and send the note to the output.
+                    sb.append(' ');
+                    sb.append(noiseFtm2Gbmc(previousNote.getNote().toLowerCase())).append(getNoteLength(n.getLength()));
+                } else {
+                    // otherwise we'll output the note like normal
+                    sb.append(' ');
+                    sb.append(noiseFtm2Gbmc(n.getNote().toLowerCase())).append(getNoteLength(n.getLength()));
+                }
+                // if the note is not a cut or note-off, then we will
+                // set it equal to the previous note.
+                if (!(n.getNote().equals("===") || n.getNote().equals("---") || n.getNote().isEmpty()))
+                    previousNote = n;
+            }
+            firstFrame = false;
+        }
+        return sb;
+    }
+    
+    private String noiseFtm2Gbmc(String gbmc) {
+        int pitch = Integer.parseInt(gbmc, 16);
+        pitch *= 11;
+        pitch /= 15;
+        return "w" + (11-pitch) + ",0,0 c";
+    }
+     
     private int noteToNum(String note) {
         switch (note) {
             case "c":
