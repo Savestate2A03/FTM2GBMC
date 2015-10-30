@@ -267,7 +267,7 @@ public class FTM2GBMC {
         sb.append(sb_MacroDuty()).append("\n");
         sb.append("; -- Pitch Macros --\n");
         sb.append(sb_MacroPitch()).append("\n");
-        sb.append(" -- Tempo (temp unfinished) --\n");
+        sb.append("; -- Tempo (temp unfinished) --\n");
         sb.append("'ABCD t128 T243\n\n");
         sb.append(sb_PulseChannel(0));
         return sb.toString();
@@ -293,7 +293,7 @@ public class FTM2GBMC {
         //64th notes is the smallest unit of time
         boolean firstFrame = true;
         // First note is a blank note.
-        Note previousNote = new Note("...", -1, -1, -1, new Effect[0]);
+        Note previousNote = new Note("r", -1, -1, -1, new Effect[0]);
         // Go through all the orders
         for(Order o : orders) {
             int pulseFrame;
@@ -353,18 +353,18 @@ public class FTM2GBMC {
                 // if the current note is empty (which means something else was set)
                 // we slur it and set the length to the empty note.
                 if (n.getNote().isEmpty()) {
-                    sb.append(" &");
-                    sb.append(previousNote.getNote());
-                    sb.append(n.getLength());
+                    sb.append(" & ");
+                    sb.append(previousNote.getNote().toLowerCase());
+                    sb.append(getNoteLength(n.getLength()));
                 } else if (n.getNote().equals("---")) {
                     // if it's a note cut...
                     sb.append(" r").append(getNoteLength(n.getLength()));
                 } else if (n.getNote().equals("===")) {
                     // if it's a note release
-                    Instrument instrument = getInstrumentById(n.getInstrument());
-                    MacroVolume volume = getVolumeMacroById(instrument.getVolume());
-                    MacroPitch   pitch = getPitchMacroById(instrument.getPitch());
-                    MacroDuty     duty = getDutyMacroById(instrument.getDuty());
+                    Instrument instrument = getInstrumentById(previousNote.getInstrument());
+                    MacroVolume volume = getVolumeMacroById(instrument.getVolume() + 64);
+                    MacroPitch   pitch = getPitchMacroById(instrument.getPitch() + 64);
+                    MacroDuty     duty = getDutyMacroById(instrument.getDuty() + 64);
                     // set the volume macro
                     if (volume != null)
                         sb.append(sb_volumeMML(volume));
@@ -384,7 +384,7 @@ public class FTM2GBMC {
                 }
                 // if the note is not a cut or note-off, then we will
                 // set it equal to the previous note.
-                if (!(n.getNote().equals("===") || n.getNote().equals("---")))
+                if (!(n.getNote().equals("===") || n.getNote().equals("---") || n.getNote().isEmpty()))
                     previousNote = n;
             }
             firstFrame = false;
@@ -421,13 +421,13 @@ public class FTM2GBMC {
         for (int i=0; i<length; i++) {
             s = s + "64^";
         }
+        s = s.replaceAll("64\\^64\\^", "32^");
+        s = s.replaceAll("32\\^32\\^", "16^");
+        s = s.replaceAll("16\\^16\\^", "8^");
+        s = s.replaceAll("8\\^8\\^", "4^");
+        s = s.replaceAll("4\\^4\\^", "2^");
+        s = s.replaceAll("2\\^2\\^", "1^");
         s = s.substring(0, s.length()-1);
-        s = s.replaceAll("\\^64\\^64", "^32");
-        s = s.replaceAll("\\^32\\^32", "^16");
-        s = s.replaceAll("\\^16\\^16", "^8");
-        s = s.replaceAll("\\^8\\^8", "^4");
-        s = s.replaceAll("\\^4\\^4", "^2");
-        s = s.replaceAll("\\^2\\^2", "^1");
         return s;
     }
     
@@ -442,13 +442,13 @@ public class FTM2GBMC {
                 loopPoint = v.getRelease();
             for (int i=0; i<loopPoint; i++) {
                 if (i == v.getLoop())
-                    sb.append('[');
+                    sb.append("[,");
                 int value = v.getValues()[i];
                 sb.append(value - 15);
                 if (i < loopPoint-1) {
                     sb.append(", ");
                 } else if (v.getLoop() != -1)
-                    sb.append("] 2,] 2}\n");
+                    sb.append(",] 2,] 2}\n");
                 else
                     sb.append("}\n");
             }
@@ -456,13 +456,13 @@ public class FTM2GBMC {
                 sb.append("#V").append(num+64).append(" {");
                 for (int i=v.getRelease(); i<v.getValues().length; i++) {
                     if (i == v.getLoop())
-                        sb.append('[');
+                        sb.append("[,");
                     int value = v.getValues()[i];
                     sb.append(value - 15);
                     if (i < v.getValues().length-1) {
                         sb.append(", ");
                     } else if (v.getLoop() != -1)
-                        sb.append("] 2,] 2}");
+                        sb.append(",] 2,] 2}");
                     else
                     sb.append("}\n");
                 }
@@ -483,13 +483,13 @@ public class FTM2GBMC {
                 loopPoint = d.getRelease();
             for (int i=0; i<loopPoint; i++) {
                 if (i == d.getLoop())
-                    sb.append('[');
+                    sb.append("[,");
                 int value = d.getValues()[i];
                 sb.append(value);
                 if (i < loopPoint-1) {
                     sb.append(", ");
                 } else if (d.getLoop() != -1)
-                    sb.append("] 2,] 2}\n");
+                    sb.append(",] 2,] 2}\n");
                 else
                     sb.append("}\n");
             }
@@ -503,7 +503,7 @@ public class FTM2GBMC {
                     if (i < d.getValues().length-1) {
                         sb.append(", ");
                     } else if (d.getLoop() != -1)
-                        sb.append("] 2,] 2}");
+                        sb.append(",] 2,] 2}");
                     else
                     sb.append("}\n");
                 }
@@ -524,13 +524,13 @@ public class FTM2GBMC {
                 loopPoint = p.getRelease();
             for (int i=0; i<loopPoint; i++) {
                 if (i == p.getLoop())
-                    sb.append('[');
+                    sb.append("[,");
                 int value = p.getValues()[i];
                 sb.append(value);
                 if (i < loopPoint-1) {
                     sb.append(", ");
                 } else if (p.getLoop() != -1)
-                    sb.append("] 2,] 2}\n");
+                    sb.append(",] 2,] 2}\n");
                 else
                     sb.append("}\n");
             }

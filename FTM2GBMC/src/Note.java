@@ -12,6 +12,8 @@ public class Note {
     
     public Note(String note, int octave, int instrument, int volume, Effect[] effects) {
         this.note = note;
+        if (octave != -1)
+            octave += 2;
         this.octave = octave;
         this.instrument = instrument;
         this.volume = volume;
