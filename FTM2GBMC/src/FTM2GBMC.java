@@ -297,6 +297,8 @@ public class FTM2GBMC {
         sb.append('\'').append(chan).append(' ').append(" v15 ");
         //64th notes is the smallest unit of time
         boolean firstFrame = true;
+        int prevDutyCycle = 0;
+        boolean resetDutyCycle = true;
         // First note is a blank note.
         Note previousNote = new Note("r", -1, -1, -1, new Effect[0]);
         // Go through all the orders
@@ -327,14 +329,6 @@ public class FTM2GBMC {
             for (int i=0; i<frame.getNotes().size(); i++) {
                 // get the current note
                 Note n = frame.getNotes().get(i);
-                // if the note has a volume set, push it to the output
-                if (n.getVolume() != -1)
-                    sb.append(" v").append(n.getVolume()).append(' ');
-                // if there's an octave set (and it's not the same as the previous note) , push it to the output
-                if (n.getOctave() != -1 && previousNote.getOctave() != n.getOctave())
-                    sb.append(" o").append(n.getOctave()).append(' ');
-                // if the current note's instrument is not blank and not equal to the 
-                // previous note's instrument, we need to update the instruments!
                 // Effects
                 if (n.getEffects().length > 0) {
                     // if there are effects...
@@ -342,7 +336,15 @@ public class FTM2GBMC {
                         char effect = e.getType().charAt(0);
                         switch (effect) {
                             case 'A':
-                                sb.append(" k15,");
+                                sb.append(" k");
+                                if (n.getVolume() == -1) {
+                                    if (previousNote.getVolume() == -1)
+                                        break;
+                                    sb.append(previousNote.getVolume());
+                                } else {
+                                    sb.append(n.getVolume());
+                                }
+                                sb.append(",");
                                 boolean direction = (e.getParam(1)-e.getParam(0) > 0);
                                 if (direction)
                                     sb.append('0');
@@ -362,10 +364,19 @@ public class FTM2GBMC {
                                 forceInstrumentCheck = true;
                                 sb.append(" x");
                                 sb.append(e.getParam(1));
+                                prevDutyCycle = e.getParam(1);
                                 break;
                         }
                     }
                 }
+                // if the note has a volume set, push it to the output
+                if (n.getVolume() != -1)
+                    sb.append(" v").append(n.getVolume()).append(' ');
+                // if there's an octave set (and it's not the same as the previous note) , push it to the output
+                if (n.getOctave() != -1 && previousNote.getOctave() != n.getOctave())
+                    sb.append(" o").append(n.getOctave()).append(' ');
+                // if the current note's instrument is not blank and not equal to the 
+                // previous note's instrument, we need to update the instruments!
                 if (forceInstrumentCheck && (previousNote.getInstrument() != -1)) {
                     Instrument instrument = getInstrumentById(previousNote.getInstrument());
                     MacroVolume volume = getVolumeMacroById(instrument.getVolume());
@@ -397,10 +408,15 @@ public class FTM2GBMC {
                     else
                         sb.append(" zf127,0,0");
                     // set the duty macro
-                    if (duty != null)
+                    if (duty != null) { 
                         sb.append(sb_dutyMML(duty));
-                    else
+                        resetDutyCycle = true;
+                    }
+                    else if (resetDutyCycle) {
                         sb.append(" zw127,0,0");
+                        sb.append(" x").append(prevDutyCycle);
+                        resetDutyCycle = false;
+                    }
                 }
                 // if the current note is empty (which means something else was set)
                 // we slur it and set the length to the empty note.
