@@ -17,6 +17,7 @@ public class FTM2GBMC {
     private String songCopyright;
     private int songSpeed;
     private int songTempo;
+    private int loopPoint;
     
     // Macros
     ArrayList<MacroVolume> volumeMacros;
@@ -379,6 +380,14 @@ public class FTM2GBMC {
                             case 'R': 
                                 slideAmount = -e.getParam(1);
                                 break;
+                            case 'W':
+                                sb.append(" L ");
+                                break;
+                            case 'P':
+                                int detuneAmount = e.getParam(0)*16 + e.getParam(1);
+                                detuneAmount = detuneAmount - 0x80;
+                                sb.append(" %").append(detuneAmount).append(' ');
+                                break;
                         }
                     }
                 }
@@ -495,11 +504,10 @@ public class FTM2GBMC {
         return sb;
     }
     
-     private StringBuilder sb_TriangleChannel() throws Exception {
-        ArrayList<Frame> frames = null;
+    private StringBuilder sb_TriangleChannel() throws Exception {
+        ArrayList<Frame> frames = triangle;
         StringBuilder sb = new StringBuilder();
         char chan = 'C';
-        frames = triangle;
         sb.append('\'').append(chan).append(' ').append(" @0 v3 ");
         //64th notes is the smallest unit of time
         boolean firstFrame = true;
@@ -544,6 +552,14 @@ public class FTM2GBMC {
                                 break;
                             case 'R': 
                                 slideAmount = -e.getParam(1);
+                                break;
+                            case 'W':
+                                sb.append(" L ");
+                                break;
+                            case 'P':
+                                int detuneAmount = e.getParam(0)*16 + e.getParam(1);
+                                detuneAmount = detuneAmount - 0x80;
+                                sb.append(" %").append(detuneAmount).append(' ');
                                 break;
                         }
                     }
@@ -683,6 +699,9 @@ public class FTM2GBMC {
                     for (Effect e : n.getEffects()) {
                         char effect = e.getType().charAt(0);
                         switch (effect) {
+                            case 'W':
+                                sb.append(" L ");
+                                break;
                             case 'A':
                                 sb.append(" k");
                                 if (n.getVolume() == -1) {
@@ -768,9 +787,7 @@ public class FTM2GBMC {
     
     private String noiseFtm2Gbmc(String gbmc) {
         int pitch = Integer.parseInt(gbmc, 16);
-        pitch *= 11;
-        pitch /= 15;
-        return "w" + (11-pitch) + ",0,0 c";
+        return "w" + (15-pitch) + ",0,0 c";
     }
      
     private int noteToNum(String note) {
