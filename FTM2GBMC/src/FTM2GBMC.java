@@ -233,6 +233,7 @@ public class FTM2GBMC {
         System.out.println(" Speed: " + songSpeed);
         System.out.println(" Tempo: " + songTempo);
         System.out.println(" BPM:   " + songBPM);
+        songBPM /= 4;
         gbmcTempo = (256 * (songBPM - 20)) / songBPM;
         if ((gbmcTempo > 255) || (gbmcTempo < 1))
             throw new Exception("GBMC tempo out of range! (1-255) --> [" + gbmcTempo + "]");
