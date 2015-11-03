@@ -17,7 +17,8 @@ public class FTM2GBMC {
     private String songCopyright;
     private int songSpeed;
     private int songTempo;
-    private int loopPoint;
+    private int songBPM;
+    private int gbmcTempo;
     
     // Macros
     ArrayList<MacroVolume> volumeMacros;
@@ -207,7 +208,7 @@ public class FTM2GBMC {
         System.out.println("Total orders: " + orders.size());
     }
     
-    private void information() {
+    private void information() throws Exception {
         // Set the title, author, copyright, speed, and tempo
         songTitle = firstFoundLine("TITLE");
         songTitle = songTitle.split("\\s+", 2)[1];
@@ -224,12 +225,17 @@ public class FTM2GBMC {
         String[] info = trackInfo.split("\\s+");
         songSpeed = Integer.parseInt(info[2]);
         songTempo = Integer.parseInt(info[3]);
+        songBPM   = songTempo * 6 / songSpeed;
         System.out.println("Detected FTM Information:");
         System.out.println(" [Song]      " + songTitle);
         System.out.println(" [Author]    " + songAuthor);
         System.out.println(" [Copyright] " + songCopyright);
         System.out.println(" Speed: " + songSpeed);
         System.out.println(" Tempo: " + songTempo);
+        System.out.println(" BPM:   " + songBPM);
+        gbmcTempo = (256 * (songBPM - 20)) / songBPM;
+        if ((gbmcTempo > 255) || (gbmcTempo < 1))
+            throw new Exception("GBMC tempo out of range! (1-255) --> [" + gbmcTempo + "]");
     }
     
     private int findText(String text) {
@@ -271,8 +277,8 @@ public class FTM2GBMC {
         sb.append("; -- Pitch Macros --\n");
         sb.append(sb_MacroPitch()).append("\n");
         sb.append("#F127 {0,\\} ; Default Macro\n");
-        sb.append("; -- Tempo (temp unfinished) --\n");
-        sb.append("'ABCD t128 T205\n\n");
+        sb.append("; -- Tempo --\n");
+        sb.append("'ABCD t128 T").append(gbmcTempo).append("\n\n");
         sb.append(sb_PulseChannel(0));
         sb.append("\n\n");
         sb.append(sb_PulseChannel(1));

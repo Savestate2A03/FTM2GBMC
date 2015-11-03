@@ -30,8 +30,8 @@
 #F0 {[,-1, -1, 0, 0, 1, 1, 0, 0,] 2,] 2}
 
 #F127 {0,\} ; Default Macro
-; -- Tempo (temp unfinished) --
-'ABCD t128 T150
+; -- Tempo --
+'ABCD t128 T238
 
 'A  v15  L  %-1  v13  o2  zv127,0,0 zf127,0,0 zw0,1,0 c32 v8  & c32 v13  e32 v8  c32 v13  g32 v8  e32 v13  b32 v8  g32 v13  o3  d32 v8  o2  b32 v13  o3  f32 v8  d32 v13  a32 v8  f32 v13  o4  c32 v8  o3  a32 v13  o4  e32 v8  c32 v13  g32 v8  e32 v13  b32 v8  g32 v13  o5  d32 v8  o4  b32 v13  & b32 v8  o5  d32 v4  & d32 v2  & d32 v1  & d32 v0  & d16^32
 'A  %0  v10  o3  zv1,1,0 zf127,0,0 zw1,1,0 c32 r32 c32 r32 g32 r16 d+32 c64 r64 c32 r32 c32 g32 r32 g32 d+32 c32 r32 c64 r64 o2  c32 o3  g32 r16 d+32 c64 r64 c32 r32 c32 g32 r32 g32 d+32
