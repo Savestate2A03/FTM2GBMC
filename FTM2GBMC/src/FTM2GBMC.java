@@ -344,6 +344,9 @@ public class FTM2GBMC {
                 // ---
                 // get the current note
                 Note n = frame.getNotes().get(i);
+                // if the note has a volume set, push it to the output
+                if (n.getVolume() != -1)
+                    sb.append(" v").append(n.getVolume()).append(' ');
                 // Effects
                 if (n.getEffects().length > 0) {
                     // if there are effects...
@@ -398,9 +401,6 @@ public class FTM2GBMC {
                         }
                     }
                 }
-                // if the note has a volume set, push it to the output
-                if (n.getVolume() != -1)
-                    sb.append(" v").append(n.getVolume()).append(' ');
                 // if there's an octave set (and it's not the same as the previous note) , push it to the output
                 if (n.getOctave() != -1 && previousNote.getOctave() != n.getOctave())
                     sb.append(" o").append(n.getOctave()).append(' ');
