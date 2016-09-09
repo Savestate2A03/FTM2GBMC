@@ -210,3 +210,10 @@
 03:57 <B00daW> not sure if there's much else either :)
 03:57 <B00daW> we're about hitting the ceiling
 03:57 <Savestate> yeah! I'm going to try to consolidate this log into key points later
+04:00 <B00daW> yeah
+04:00 <B00daW> one more thing
+04:00 <B00daW> remember WAV RAM is 16 bytes
+04:00 <B00daW> check GBMC's PCM code about what it does after the samples wrap
+04:00 <B00daW> guaranteed you might get a pop/click
+04:01 <B00daW> ok good night :)
+04:01 <B00daW> we may have to figure out something on how to make the click/pop softer
