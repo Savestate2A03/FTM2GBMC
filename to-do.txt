@@ -1,0 +1,212 @@
+01:35 <B00daW> hey have you considered using the additional stereo volume registers? :)
+01:36 <Savestate> oh ! hmm, i don't think I am aware of those ... 
+01:36 <B00daW> oh one sec
+01:36 <B00daW> does GBMC have direct write to regs?
+01:36 <Savestate> probably!
+01:36 <Savestate> lemmie check
+01:37 <B00daW> http://gbdev.gg8.se/wiki/articles/Sound_Controller#FF24_-_NR50_-_Channel_control_.2F_ON-OFF_.2F_Volume_.28R.2FW.29
+01:37 <B00daW> there is additional volume attenuation for L/R :)
+01:38 <Savestate> oh! i think i recall seeing something about this ...
+01:39 <Savestate> yeah it has a master volume effect!
+01:39 <Savestate> i can probably implement this as well
+01:39 <Savestate> lemmie look into it, thanks for the heads up boods!
+01:39 <B00daW> :)
+01:40 <Savestate> oh!! found direct address writing as well haha
+01:40 <Savestate> but it seems that won't be required
+01:43 <B00daW> 2a0x and GB are nothing alike
+01:43 <B00daW> they only sound similar
+01:44 <Savestate> yeah haha, i've realized that through this project. it's pretty silly how things that sound similar can be so different
+01:45 <B00daW> 2a0x is much easier to control
+01:45 <B00daW> GB is all ADSR-based
+01:48 <B00daW> wonder how much more "filtering" you can do with an additional 3 bits of volume control
+01:52 <B00daW> maybe some LFO?
+01:53 <Savestate> it has filtering ?
+01:53 <Savestate> oh! you mean software volume lfo
+01:53 <Savestate> oo that'd be cool
+01:53 <B00daW> yes
+01:53 <Savestate> i feel like I'd need to write my own driver for that sort of thing
+01:53 <B00daW> or patch it in :)
+01:53 <Savestate> I don't think the source for gbmc is public
+01:53 <B00daW> ahhh...
+01:56 <B00daW> wonder if there is a way to write the mml in such a way that it writes additional code before every sequence frame
+01:57 <B00daW> directly after the mainloop is called
+01:58 <B00daW> hrm...
+01:58 <B00daW> you can probably WRITE, but not READ, right?
+01:59 <B00daW> and there's no real return to subroutine probably :P
+02:01 <Savestate> I haven't looked too much into it. Yeah, there's a direct write but no read as far as i know
+02:05 <Savestate> oh ! got it working!! (the global panning)
+02:05 <Savestate> it only works in nezplug++ haha
+02:05 <Savestate> I'll make sure to mention that in the update
+02:06 <B00daW> hrm
+02:06 <B00daW> u command
+02:07 <B00daW> and #pcmload
+02:08 <Savestate> i'll probably add a dpcm -> gbmc pcm later on
+02:09 <B00daW> yeah :)
+02:18 <Savestate> ok added!!
+02:18 <Savestate> the hardware channel level
+02:20 <B00daW> nice :)
+02:21 <B00daW> what do you think #FRQ is for?
+02:22 <B00daW> PCM noise frequency?
+02:22 <Savestate> hmmm, maybe playback samplerate?
+02:22 <Savestate> lower sample rate == more samples at a cost of samplerate playback
+02:23 <Savestate> this is a guess
+02:23 <B00daW> yeah there are some unique sound driver variables here
+02:24 <B00daW> perhaps some of these could be configured using famitracker's comment system
+02:24 <B00daW> for an additional #include
+02:26 <B00daW> ahh i get #FRQ
+02:26 <Savestate> oh! what's it's purpose?
+02:26 <B00daW> it's whitenoise mixing to "improve" sample quality
+02:28 <B00daW> yeah that makes sense
+02:28 <B00daW> bits 4-7 of $FF22 are the noise pitch registers
+02:29 <B00daW> so it's a 4-bit shifted white noise freq value to mix into the shitty PCM
+02:29 <B00daW> yeah that could be set up as a comment
+02:29 <Savestate> oh! haha people do that with dpcm w/ nsf
+02:29 <B00daW> right :)
+02:29 <Savestate> hmm yeah 
+02:29 <Savestate> if it wasn't 2:30am i'd start looking into dpcm -> gbmc pcm haha
+02:29 <B00daW> right
+02:30 <Savestate> I'm gonna finish this demo song for the current ftm2gbmc and then probably call it a night
+02:30 <B00daW> and that DPCM>PCM is gonna come out a little shitty too :)
+02:30 <Savestate> yeahhhhh
+02:30 <Savestate> i might have a substitute thing where you can list filenames in the ftm comments
+02:30 <B00daW> you may want to maybe allow for some predictive delta fixing too
+02:30 <Savestate> and it'll replace the dpcm with whatever file you provide
+02:30 <Savestate> that would be pretty radical
+02:31 <B00daW> delta can't flatline
+02:31 <Savestate> yeah .. hmm always has that +/- jiggle
+02:31 <B00daW> so if you see X amount of +- samples then flatline it?
+02:32 <Savestate> that's probably a good starting point!
+02:33 <B00daW> frequency math for DPCM should be pretty easy too
+02:33 <B00daW> for the pitch shifts Wxx
+02:34 <Savestate> Wxx is already being used for loop point, but i'm sure that could be changed. 
+02:37 <B00daW> #MODE would be pretty useful for FTM comments too
+02:42 <B00daW> #NOISENOTE should only pertain to MML?
+02:43 <Savestate> I used noisenote to approx map the NES frequencies to the GB frequencies
+02:54 <B00daW> you said it's not open source
+02:54 <B00daW> it is
+02:55 <Savestate> oh wow, how did I miss that ??
+02:55 <B00daW> well not GBMC, but the driver
+02:56 <Savestate> ah
+03:07 <B00daW> hrm...
+03:07 <B00daW> looking at this code
+03:08 <B00daW> best thing if you really wanted more control; without talking to the author, would be to do a comparative disassembly of an almost blank music data GB/GBS file
+03:09 <B00daW> to single out just the music code versus the engine
+03:09 <B00daW> use FTM2GBMC to extract just the music data out as a binary file
+03:09 <B00daW> then parse your additional engine changes through the engine "src" directory
+03:10 <B00daW> include and compile
+03:10 <B00daW> ;------------------------------Sound Object [015]
+03:10 <B00daW> SECTION "Song Info",DATA[Sound_Info],BANK[15]
+03:10 <B00daW> 		ds		32*3
+03:10 <B00daW> SECTION "Song Obj",DATA[Sound_Adr],BANK[15]
+03:10 <B00daW> Snd_OBJ:
+03:10 <B00daW> ;	incbin	"sg99.bin"
+03:10 <B00daW> ;	incbin	"bgm05.bin"
+03:11 <B00daW> the only information that will change with the GB/GBS file is the music data :)
+03:11 <B00daW> so should be pretty easy to determine
+03:11 <B00daW> unless bankswitching?
+03:12 <Savestate> haha oh man, this would be quite a project! 
+03:12 <Savestate> to be honest, i would probably rather build one from the ground up
+03:13 <B00daW> but you could definitely add some engine hacks with additional comments this way
+03:14 <B00daW> sdrv_0.z80 is the main bit
+03:15 <B00daW> you could probably even fix some of that envelope reset shit
+03:15 <Savestate> oh! that is a limitation of ftm2gbmc
+03:15 <Savestate> well
+03:15 <Savestate> it's a limitation because of the limitation in gbmc haha
+03:15 <B00daW> nah i don't think so
+03:15 <B00daW> right
+03:15 <B00daW> it's calling the panning routine
+03:16 <B00daW> which likely doesn't save the envelope values
+03:16 <B00daW> i'm telling you, it'll be easy to find when the engine code starts/stops
+03:16 <B00daW> then just patch in your new driver ;)
+03:17 <B00daW> you just can't fuck up the track stream format
+03:20 <B00daW> sound drivers are usually considered in LOAD, INIT, PLAY
+03:21 <Savestate> i wonder how hard it'd be to port the gb sound chip to famitracker ...
+03:21 <Savestate> probably extremely haah
+03:21 <Savestate> i will look into messing with the engine code and patching it tomorrow
+03:22 <B00daW> looks like Snd_START is GBMC's PLAY, but Snd_CMD2 is the sound engine's main loop if there aren't any banks swapped
+03:22 <Savestate> ooo hmmm
+03:22 <Savestate> how does it deal with bank swapping?
+03:22 <Savestate> or can you not tell as of yet
+03:22 <B00daW> Snd_PAN: is the routine
+03:23 <B00daW> and when it's finished it jumps back to Snd_CMD2
+03:23 <B00daW> not sure if the envelope information is saved when Snd_PAN is called
+03:23 <B00daW> but likely not
+03:24 <Savestate> would i have to reserve a bit of ram to save that kind of info?
+03:24 <B00daW> for panning
+03:24 <B00daW> i was thinking panning not bank swapping; tired and reading the wrong words
+03:24 <Savestate> it's alright
+03:24 <B00daW> well you likely don't have to worry about it until you get into PCM
+03:24 <Savestate> that's true
+03:26 <B00daW> well...
+03:26 <B00daW> #BANK
+03:26 <B00daW> this would be something that FTM2GBMC would have to calculate
+03:26 <B00daW> an MML programmer would simply go from
+03:26 <B00daW> #BANK 1
+03:26 <B00daW> (music and PCM files until something breaks)
+03:26 <B00daW> #BANK 2
+03:27 <B00daW> (additional music and PCM files until it breaks again)
+03:27 <B00daW> #BANK 3
+03:27 <B00daW> yunno?
+03:28 <B00daW> likely you'll have to take a read into GBS bankswitching
+03:28 <B00daW> and the GB/GBC header for memory mapper settings
+03:28 <Savestate> i can already see the 20 wikipedia gameboy hardware documentation guides open haha
+03:28 <Savestate> well, wiki, not wikipedia
+03:28 <B00daW> GB/GBC header is really easy to understand :)
+03:28 <B00daW> GBS is more complicated
+03:29 <Savestate> i can use higan for gb at least
+03:29 <B00daW> and luckily for you, most of the work is done for you in GBMC
+03:29 <Savestate> yeah haha
+03:30 <B00daW> just don't break the order of expectations that it processes the raw music code :)
+03:31 <B00daW> is higan better than bgb?
+03:33 <Savestate> higan uses the ROM of the official nintendo gameboy snes player which is supposed to be a "perfect emulation" due to it being offical by nintendo
+03:34 <B00daW> not certain if simply the ROM is a "perfect emulation" because logic is not located in ROM
+03:38 <B00daW> you may wish to consider a ZIP archive with a readme, a batch file, and example FTMs. ;)
+03:39 <Savestate> the example ftm is part one of the set !
+03:39 <B00daW> you could make a botb.club/savestate.info site ;)
+03:39 <Savestate> I'm trying to implement all the effects and features into it
+03:39 <Savestate> oo hmm maybe
+03:41 <B00daW> well with windows i guess you should be able to drag/drop onto it too
+03:42 <B00daW> oh... nah you can't ;P
+03:42 <B00daW> but you COULD!
+03:42 <B00daW> you could probably drop your UI and streamline it :)
+03:43 <Savestate> yeah that's probably for the better!
+03:43 <Savestate> I have considered that
+03:43 <Savestate> I'll be referencing this chat a lot tomorrow haha
+03:44 <B00daW> well you at least know that your utility, with the help of GBMC, is almost in the forefront of GB music
+03:44 <B00daW> you just need to clean it up a bit :)
+03:44 <B00daW> and then advertise it
+03:44 <Savestate> well, lsdj is probably got top seed haha, but it's a good alt for those who don't want to use native software
+03:45 <B00daW> how can someone truly compose music with two thumbs?
+03:45 <B00daW> it's crazy
+03:46 <B00daW> another thing...
+03:47 <B00daW> i wonder if FamiTracker can import out-of-bounds N163 FTIs well enough
+03:47 <B00daW> you may be able to get some pure 4-bit PCM samples that way
+03:47 <B00daW> then reference the area with #PCMLOAD
+03:48 <Savestate> ooo hmm mmmm
+03:48 <Savestate> I could probably do another rewrite from the ground up so i can design it to be able to implement these things easily (my current framework isn't very good)
+03:48 <Savestate> I have rewritten it from scratch 2 times now but I wouldn't mind another
+03:48 <B00daW> your only limitation is FamiTracker
+03:49 <B00daW> GBMC shouldn't pose an issue
+03:49 <Savestate> yep
+03:50 <B00daW> you can probably tell that i generally tend to think about a subject intensely until i reach almost the very deepest bottom of it
+03:50 <B00daW> trying to find out how we can squeeze the very last drop out of this for everyone ;)
+03:51 <B00daW> #CLOCKRATE
+03:51 <B00daW> as an FTM comment
+03:52 <B00daW> patch the GBS header with a relative rate located within the FTM header
+03:52 <B00daW> that should be good
+03:52 <B00daW> GBS has multiple clocks
+03:52 <B00daW> and can utilize DMG or GBC clock modes
+03:53 <Savestate> oooh! i wasn't aware of that
+03:54 <B00daW> ftp://ftp.modland.com/pub/documents/format_documentation/Gameboy%20Sound%20System%20(.gbs).txt
+03:55 <B00daW> OE-OF
+03:55 <B00daW> should be a straight-forward patch
+03:55 <B00daW> and only relevant to GBS
+03:56 <Savestate> this is cool ! 
+03:56 <B00daW> so should be ignored if #MODE is nonzero
+03:56 <Savestate> yea
+03:56 <B00daW> in GBMC
+03:57 <Savestate> oh wow yeah I will probably try to start another rewrite. this time allowing room to implement all this stuff we've talked about. 
+03:57 <Savestate> since the current one's source is a web that's hard to pull apart
+03:57 <B00daW> not sure if there's much else either :)
+03:57 <B00daW> we're about hitting the ceiling
+03:57 <Savestate> yeah! I'm going to try to consolidate this log into key points later
