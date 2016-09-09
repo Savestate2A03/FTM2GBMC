@@ -398,6 +398,17 @@ public class FTM2GBMC {
                                 detuneAmount = detuneAmount - 0x80;
                                 sb.append(" %").append(detuneAmount).append(' ');
                                 break;
+							case 'J':
+                                sb.append(" p");
+                                if        (e.getParam(0) == 0 && e.getParam(1) == 0) {
+                                    sb.append("0");
+                                } else if (e.getParam(0) != 0 && e.getParam(1) == 0) {
+                                    sb.append("1");
+                                } else if (e.getParam(0) == 0 && e.getParam(1) != 0) {
+                                    sb.append("2");
+                                } else {
+                                    sb.append("3");
+                                }
                         }
                     }
                 }
