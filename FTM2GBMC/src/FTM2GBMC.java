@@ -410,6 +410,12 @@ public class FTM2GBMC {
                                     sb.append("3");
                                 }
                                 break;
+                            case 'H':
+                                sb.append(" @ v");
+                                sb.append(e.getParam(0)/2);
+                                sb.append(",");
+                                sb.append(e.getParam(1)/2);
+                                break;
                         }
                     }
                 }
@@ -592,6 +598,12 @@ public class FTM2GBMC {
                                     sb.append("3");
                                 }
                                 break;
+                            case 'H':
+                                sb.append(" @ v");
+                                sb.append(e.getParam(0)/2);
+                                sb.append(",");
+                                sb.append(e.getParam(1)/2);
+                                break;
                         }
                     }
                 }
@@ -769,6 +781,12 @@ public class FTM2GBMC {
                                 } else {
                                     sb.append("3");
                                 }
+                                break;
+                            case 'H':
+                                sb.append(" @ v");
+                                sb.append(e.getParam(0)/2);
+                                sb.append(",");
+                                sb.append(e.getParam(1)/2);
                                 break;
                         }
                     }
