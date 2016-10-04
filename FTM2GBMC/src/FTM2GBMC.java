@@ -1097,21 +1097,38 @@ public class FTM2GBMC {
         }
         return sb;
     }
+    
+    public static void printHelp(){
+        System.out.println("usage: java -jar FTM2GBMC.jar [input] [output]");
+    }
 
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
+        String input;
         System.out.println("------------------------");
         System.out.println("|      Welcome to      |");
         System.out.println("| Savestate's FTM2GBMC |");
         System.out.println("------------------------");
-        System.out.print("[Open] FamiTracker text export --> ");
-        String input = sc.nextLine();
+        if(args.length > 0){
+            input = args[0];
+            if (input.equals("-h")){
+                printHelp();
+                System.exit(0);
+            }
+        }else{
+            System.out.print("[Open] FamiTracker text export --> ");
+            input = sc.nextLine();
+        }
         input = input.replaceAll("\\\"", "");
         Charset encoding = Charset.defaultCharset();
         ArrayList<String> lines = (ArrayList<String>) Files.readAllLines(Paths.get(input), encoding);
         FTM2GBMC ftm2gbmc = new FTM2GBMC(lines);
-        System.out.print("[Save] GBMC .mml filename --> ");
-        input = sc.nextLine();
+        if(args.length > 1){
+            input = args[1];
+        }else{
+            System.out.print("[Save] GBMC .mml filename --> ");
+            input = sc.nextLine();
+        }
         String output = ftm2gbmc.build();
         PrintWriter out = new PrintWriter(input);
         out.print(output);
