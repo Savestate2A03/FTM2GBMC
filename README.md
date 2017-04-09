@@ -168,28 +168,4 @@ etc etc
 Reminder, as with all effects, using an `Hxx` command will reset the volume envelope for the channel it's in (due to having to code the timing factor for the volume change). It's supported in all channels however so use it in whichever one would be least affected by an envelope reset.
 
 ##### GBS Playback Support for Hxx
-As this is a hardware feature not supported by most GBS players, I suggest using [nezplug++](http://offgao.net/program/nezplug++.html)! It seemed to play the file back correctly. foo_gep however, **does not**!! 
-
-## License
-
-### MIT License
-
-Copyright (c) 2016 Joseph El-Khouri
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+As this is a hardware feature not supported by most GBS players, I suggest using [nezplug++](http://offgao.net/program/nezplug++.html)! It seemed to play the file back correctly. foo_gep however, **does not**!!
