@@ -2,6 +2,7 @@ group 'com.savestate.ftm2gbmc'
 version '1.0'
 
 apply plugin: 'java'
+apply plugin: 'idea'
 
 sourceCompatibility = 1.7
 
