@@ -1,4 +1,4 @@
-## FTM2GBMC: *Make Game Boy Music in FamiTracker*
+## FTM2GBMC: *Make Game Boy Music in FamiTracker* [![Build Status](https://travis-ci.org/Savestate2A03/FTM2GBMC.svg?branch=master)](https://travis-ci.org/Savestate2A03/FTM2GBMC)
 
 #### Welcome
 
