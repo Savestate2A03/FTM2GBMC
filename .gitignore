@@ -1,5 +1,4 @@
 *.class
-*.bat
 *.setting
 
 libs/
@@ -57,6 +56,7 @@ $RECYCLE.BIN/
 # Gradle
 build/
 .gradle/
+gradle/
 /bin/
 
 # Eclipse
