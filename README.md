@@ -18,7 +18,7 @@ java -jar FTM2GBMC.jar [input [output]]
 
 ## Required Software
 
-- NetBeans w/ Java Development Kit [→](https://netbeans.org/downloads/)
+- Any Gradle-supporting IDE (Netbeans, Eclipse, or IntelliJ) [→](https://www.jetbrains.com/idea/)
 - Game Boy Music Compiler [→](http://www.geocities.jp/submarine600/html/sounddriver.html)
 - FamiTracker [→](http://www.famitracker.com/)
 
