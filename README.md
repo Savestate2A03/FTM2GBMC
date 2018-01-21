@@ -12,7 +12,7 @@ java -jar FTM2GBMC.jar [input [output]]
 
 ```input``` FamiTracker text export file.
 
-```output``` GBMC Compatiable MML file.
+```output``` GBMC compatible MML file.
 
 *If no input and/or output is provided at the command line, it'll ask you for them during runtime.*
 
