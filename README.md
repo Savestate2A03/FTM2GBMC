@@ -40,7 +40,7 @@ A few of the FamiTracker commands are 1:1 when it comes to how they translate ov
 
 #### Global Commands
 
-Global commands supported on all channels are ```Wxx```, ```Jxx```, and ```Hxx```
+Global commands supported on all channels are ```Wxx```, ```Jxx```, and ```Hxx```.
 
 #### Pulse Channels
 
