@@ -283,7 +283,7 @@ public class FTM2GBMC {
     }
 
     public String build() throws Exception {
-        String sb = "; ============================\n" +
+        return "; ============================\n" +
                 "; FILE GENERATED WITH FTM2GBMC\n" +
                 "; ============================\n" +
                 "; FTM2GBMC created by Savestate!\n\n" +
@@ -314,7 +314,6 @@ public class FTM2GBMC {
                 sb_TriangleChannel() +
                 "\n\n" +
                 sb_NoiseChannel();
-        return sb;
     }
 
     private StringBuilder sb_PulseChannel(int channel) throws Exception {

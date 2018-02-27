@@ -56,12 +56,11 @@ public class Instrument {
 
     @Override
     public String toString() {
-        String sb = name + " --> " +
+        return name + " --> " +
                 "V:" + volume + ' ' +
                 "A:" + arp + ' ' +
                 "P:" + pitch + ' ' +
                 "D:" + duty;
-        return sb;
     }
 
 }
