@@ -152,9 +152,9 @@ public class FTM2GBMC {
     private boolean doesFrameExist(int num, ArrayList<Frame> frames) {
         for (Frame f : frames) {
             if (f.getIdentity() == num)
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
     private Frame getFrameById(int num, ArrayList<Frame> frames) {
@@ -209,13 +209,13 @@ public class FTM2GBMC {
         System.out.println("Building frame list...");
         for (Order o : orders) {
             // Pulse 1 frames
-            if (!doesFrameExist(o.getPulse1(), pulse1))
+            if (doesFrameExist(o.getPulse1(), pulse1))
                 pulse1.add(Frame.frameBuilder(0, o.getPulse1(), text));
-            if (!doesFrameExist(o.getPulse2(), pulse2))
+            if (doesFrameExist(o.getPulse2(), pulse2))
                 pulse2.add(Frame.frameBuilder(1, o.getPulse2(), text));
-            if (!doesFrameExist(o.getTriangle(), triangle))
+            if (doesFrameExist(o.getTriangle(), triangle))
                 triangle.add(Frame.frameBuilder(2, o.getTriangle(), text));
-            if (!doesFrameExist(o.getNoise(), noise))
+            if (doesFrameExist(o.getNoise(), noise))
                 noise.add(Frame.frameBuilder(3, o.getNoise(), text));
         }
         System.out.println("...built " + (
