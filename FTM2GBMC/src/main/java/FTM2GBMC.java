@@ -27,9 +27,6 @@ public class FTM2GBMC {
     private String songTitle;
     private String songAuthor;
     private String songCopyright;
-    private int songSpeed;
-    private int songTempo;
-    private int songBPM;
     private int gbmcTempo;
 
     public FTM2GBMC(ArrayList<String> textImport) throws Exception {
@@ -254,9 +251,9 @@ public class FTM2GBMC {
         String trackInfo = firstFoundLine("TRACK");
         //TRACK 128   2 135 "New song"
         String[] info = trackInfo.split("\\s+");
-        songSpeed = Integer.parseInt(info[2]);
-        songTempo = Integer.parseInt(info[3]);
-        songBPM = songTempo * 6 / songSpeed;
+        int songSpeed = Integer.parseInt(info[2]);
+        int songTempo = Integer.parseInt(info[3]);
+        int songBPM = songTempo * 6 / songSpeed;
         System.out.println("Detected FTM Information:");
         System.out.println(" [Song]      " + songTitle);
         System.out.println(" [Author]    " + songAuthor);
