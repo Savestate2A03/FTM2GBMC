@@ -987,18 +987,18 @@ public class FTM2GBMC {
     }
 
     private String getNoteLength(int length) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            s = s + "64^";
+            s.append("64^");
         }
-        s = s.replaceAll("64\\^64\\^", "32^");
-        s = s.replaceAll("32\\^32\\^", "16^");
-        s = s.replaceAll("16\\^16\\^", "8^");
-        s = s.replaceAll("8\\^8\\^", "4^");
-        s = s.replaceAll("4\\^4\\^", "2^");
-        s = s.replaceAll("2\\^2\\^", "1^");
-        s = s.substring(0, s.length() - 1);
-        return s;
+        s = new StringBuilder(s.toString().replaceAll("64\\^64\\^", "32^"));
+        s = new StringBuilder(s.toString().replaceAll("32\\^32\\^", "16^"));
+        s = new StringBuilder(s.toString().replaceAll("16\\^16\\^", "8^"));
+        s = new StringBuilder(s.toString().replaceAll("8\\^8\\^", "4^"));
+        s = new StringBuilder(s.toString().replaceAll("4\\^4\\^", "2^"));
+        s = new StringBuilder(s.toString().replaceAll("2\\^2\\^", "1^"));
+        s = new StringBuilder(s.substring(0, s.length() - 1));
+        return s.toString();
     }
 
     private StringBuilder sb_MacroVolume() {
