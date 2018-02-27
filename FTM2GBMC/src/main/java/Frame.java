@@ -34,11 +34,11 @@ public class Frame {
             int octave = -1;
             try {
                 instrument = Integer.parseInt(info[1], 16);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             try {
                 volume = Integer.parseInt(info[2], 16);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             if (note.equals("...")) {
                 note = "";
