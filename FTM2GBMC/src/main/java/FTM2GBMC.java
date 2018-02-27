@@ -283,39 +283,38 @@ public class FTM2GBMC {
     }
 
     public String build() throws Exception {
-        StringBuilder sb = new StringBuilder();
-        sb.append("; ============================\n");
-        sb.append("; FILE GENERATED WITH FTM2GBMC\n");
-        sb.append("; ============================\n");
-        sb.append("; FTM2GBMC created by Savestate!\n\n");
-        sb.append("; -- INFO --\n");
-        sb.append("#TITLE \"").append(songTitle.replaceAll("\\\"", "''")).append("\"\n");
-        sb.append("#AUTHOR \"").append(songAuthor.replaceAll("\\\"", "''")).append("\"\n");
-        sb.append("#COPYRIGHT \"").append(songCopyright.replaceAll("\\\"", "''")).append("\"\n\n");
-        sb.append("; -- WAVE Macros --\n");
-        sb.append("#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n");
-        sb.append("; -- Export Mode --\n");
-        sb.append("; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n");
-        sb.append("#mode 0\n\n");
-        sb.append("; -- Volume Macros --\n");
-        sb.append(sb_MacroVolume()).append("\n");
-        sb.append("#V127 {15,\\} ; Default Macro\n");
-        sb.append("; -- Duty Cycle Macros --\n");
-        sb.append(sb_MacroDuty()).append("\n");
-        sb.append("#X127 {0,\\} ; Default Macro\n");
-        sb.append("; -- Pitch Macros --\n");
-        sb.append(sb_MacroPitch()).append("\n");
-        sb.append("#F127 {0,\\} ; Default Macro\n");
-        sb.append("; -- Tempo --\n");
-        sb.append("'ABCD t128 T").append(gbmcTempo).append("\n\n");
-        sb.append(sb_PulseChannel(0));
-        sb.append("\n\n");
-        sb.append(sb_PulseChannel(1));
-        sb.append("\n\n");
-        sb.append(sb_TriangleChannel());
-        sb.append("\n\n");
-        sb.append(sb_NoiseChannel());
-        return sb.toString();
+        String sb = "; ============================\n" +
+                "; FILE GENERATED WITH FTM2GBMC\n" +
+                "; ============================\n" +
+                "; FTM2GBMC created by Savestate!\n\n" +
+                "; -- INFO --\n" +
+                "#TITLE \"" + songTitle.replaceAll("\\\"", "''") + "\"\n" +
+                "#AUTHOR \"" + songAuthor.replaceAll("\\\"", "''") + "\"\n" +
+                "#COPYRIGHT \"" + songCopyright.replaceAll("\\\"", "''") + "\"\n\n" +
+                "; -- WAVE Macros --\n" +
+                "#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n" +
+                "; -- Export Mode --\n" +
+                "; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n" +
+                "#mode 0\n\n" +
+                "; -- Volume Macros --\n" +
+                sb_MacroVolume() + "\n" +
+                "#V127 {15,\\} ; Default Macro\n" +
+                "; -- Duty Cycle Macros --\n" +
+                sb_MacroDuty() + "\n" +
+                "#X127 {0,\\} ; Default Macro\n" +
+                "; -- Pitch Macros --\n" +
+                sb_MacroPitch() + "\n" +
+                "#F127 {0,\\} ; Default Macro\n" +
+                "; -- Tempo --\n" +
+                "'ABCD t128 T" + gbmcTempo + "\n\n" +
+                sb_PulseChannel(0) +
+                "\n\n" +
+                sb_PulseChannel(1) +
+                "\n\n" +
+                sb_TriangleChannel() +
+                "\n\n" +
+                sb_NoiseChannel();
+        return sb;
     }
 
     private StringBuilder sb_PulseChannel(int channel) throws Exception {

@@ -56,13 +56,12 @@ public class Instrument {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append(" --> ");
-        sb.append("V:").append(volume).append(' ');
-        sb.append("A:").append(arp).append(' ');
-        sb.append("P:").append(pitch).append(' ');
-        sb.append("D:").append(duty);
-        return sb.toString();
+        String sb = name + " --> " +
+                "V:" + volume + ' ' +
+                "A:" + arp + ' ' +
+                "P:" + pitch + ' ' +
+                "D:" + duty;
+        return sb;
     }
 
 }
