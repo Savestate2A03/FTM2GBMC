@@ -27,7 +27,7 @@ public class Instrument {
         int a = Integer.parseInt(split[3]);
         int p = Integer.parseInt(split[4]);
         int d = Integer.parseInt(split[6]);
-        return new Instrument(v, a, p, d, i, split[7].replaceAll("\\\"", ""));
+        return new Instrument(v, a, p, d, i, split[7].replaceAll("\"", ""));
     }
 
     public int getVolume() {

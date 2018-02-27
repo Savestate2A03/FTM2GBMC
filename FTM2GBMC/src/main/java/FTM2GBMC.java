@@ -60,7 +60,7 @@ public class FTM2GBMC {
             System.out.print("[Open] FamiTracker text export --> ");
             input = sc.nextLine();
         }
-        input = input.replaceAll("\\\"", "");
+        input = input.replaceAll("\"", "");
         Charset encoding = Charset.defaultCharset();
         ArrayList<String> lines = (ArrayList<String>) Files.readAllLines(Paths.get(input), encoding);
         FTM2GBMC ftm2gbmc = new FTM2GBMC(lines);
@@ -241,7 +241,7 @@ public class FTM2GBMC {
         songTitle = firstFoundLine("TITLE");
         songTitle = songTitle.split("\\s+", 2)[1];
         songTitle = songTitle.substring(1, songTitle.length() - 1);
-        songTitle = songTitle.replaceAll("\\\"\\\"", "\"");
+        songTitle = songTitle.replaceAll("\"\"", "\"");
         songAuthor = firstFoundLine("AUTHOR");
         songAuthor = songAuthor.split("\\s+")[1];
         songAuthor = songAuthor.substring(1, songAuthor.length() - 1);
@@ -288,9 +288,9 @@ public class FTM2GBMC {
                 "; ============================\n" +
                 "; FTM2GBMC created by Savestate!\n\n" +
                 "; -- INFO --\n" +
-                "#TITLE \"" + songTitle.replaceAll("\\\"", "''") + "\"\n" +
-                "#AUTHOR \"" + songAuthor.replaceAll("\\\"", "''") + "\"\n" +
-                "#COPYRIGHT \"" + songCopyright.replaceAll("\\\"", "''") + "\"\n\n" +
+                "#TITLE \"" + songTitle.replaceAll("\"", "''") + "\"\n" +
+                "#AUTHOR \"" + songAuthor.replaceAll("\"", "''") + "\"\n" +
+                "#COPYRIGHT \"" + songCopyright.replaceAll("\"", "''") + "\"\n\n" +
                 "; -- WAVE Macros --\n" +
                 "#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n" +
                 "; -- Export Mode --\n" +
