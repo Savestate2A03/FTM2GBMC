@@ -556,7 +556,7 @@ public class FTM2GBMC {
         return sb;
     }
 
-    private StringBuilder sb_TriangleChannel() throws Exception {
+    private StringBuilder sb_TriangleChannel() {
         ArrayList<Frame> frames = triangle;
         StringBuilder sb = new StringBuilder();
         char chan = 'C';
@@ -728,7 +728,7 @@ public class FTM2GBMC {
         return sb;
     }
 
-    private StringBuilder sb_NoiseChannel() throws Exception {
+    private StringBuilder sb_NoiseChannel() {
         ArrayList<Frame> frames = noise;
         char chan = 'D';
         StringBuilder sb = new StringBuilder();
