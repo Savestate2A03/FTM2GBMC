@@ -54,9 +54,9 @@ The pulse channels support the FamiTracker commands ```Qxx```, ```Rxx```, and ``
 
 The noise channel supports the FamiTracker command ```Axx```.
 
-#### IMPORTANT: Retriggering Volume Envlopes
+#### IMPORTANT: Retriggering Volume Envelopes
 
-All notes and effect commands retrigger each note's volume envlope. If you'd like to change the duty cycle/pitch mid-note, you'll need to use a duty macro.
+All notes and effect commands retrigger each note's volume envelope. If you'd like to change the duty cycle/pitch mid-note, you'll need to use a duty macro.
 
 ```
 C-3 00 A A02
