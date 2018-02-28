@@ -6,30 +6,30 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class FTM2GBMC {
+class FTM2GBMC {
 
     private final ArrayList<String> text;
     // Macros
-    ArrayList<MacroVolume> volumeMacros;
-    ArrayList<MacroArp> arpeggioMacros;
-    ArrayList<MacroPitch> pitchMacros;
-    ArrayList<MacroDuty> dutyMacros;
+    private ArrayList<MacroVolume> volumeMacros;
+    private ArrayList<MacroArp> arpeggioMacros;
+    private ArrayList<MacroPitch> pitchMacros;
+    private ArrayList<MacroDuty> dutyMacros;
     // Instruments
-    ArrayList<Instrument> instruments;
+    private ArrayList<Instrument> instruments;
     // Channels
-    ArrayList<Frame> pulse1;
-    ArrayList<Frame> pulse2;
-    ArrayList<Frame> triangle;
-    ArrayList<Frame> noise;
+    private ArrayList<Frame> pulse1;
+    private ArrayList<Frame> pulse2;
+    private ArrayList<Frame> triangle;
+    private ArrayList<Frame> noise;
     // List of Frames
-    ArrayList<Order> orders;
+    private ArrayList<Order> orders;
     // Song information
     private String songTitle;
     private String songAuthor;
     private String songCopyright;
     private int gbmcTempo;
 
-    public FTM2GBMC(ArrayList<String> textImport) throws Exception {
+    private FTM2GBMC(ArrayList<String> textImport) throws Exception {
         this.text = textImport;
         init();
         information();
@@ -39,7 +39,7 @@ public class FTM2GBMC {
         buildInstruments();
     }
 
-    public static void printHelp() {
+    private static void printHelp() {
         System.out.println("usage: java -jar FTM2GBMC.jar [input] [output]");
     }
 
@@ -282,7 +282,7 @@ public class FTM2GBMC {
         return this.text.get(index);
     }
 
-    public String build() throws Exception {
+    private String build() throws Exception {
         return "; ============================\n" +
                 "; FILE GENERATED WITH FTM2GBMC\n" +
                 "; ============================\n" +

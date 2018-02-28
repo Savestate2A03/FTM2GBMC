@@ -4,7 +4,7 @@ public class Effect {
     private final int param1;
     private final int param2;
 
-    Effect(String effect) {
+    private Effect(String effect) {
         type = String.valueOf(effect.charAt(0)).toUpperCase();
         param1 = Integer.parseInt(effect.substring(1, 2), 16);
         param2 = Integer.parseInt(effect.substring(2, 3), 16);

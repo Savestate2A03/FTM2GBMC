@@ -4,7 +4,7 @@ public class MacroArp extends Macro {
 
     private final int arpType; // 0 is Absolute, 1 is Relative, 2 is Fixed
 
-    public MacroArp(int[] values, int arpType, int loopPoint, int releasePoint, int ident) {
+    private MacroArp(int[] values, int arpType, int loopPoint, int releasePoint, int ident) {
         super(values, loopPoint, releasePoint, ident);
         this.arpType = arpType;
     }

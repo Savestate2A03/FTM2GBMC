@@ -5,9 +5,9 @@ public class Instrument {
     private final int pitch;
     private final int duty;
     private final int ident;
-    String name;
+    private final String name;
 
-    public Instrument(int v, int a, int p, int d, int i, String n) {
+    private Instrument(int v, int a, int p, int d, int i, String n) {
         volume = v;
         arp = a;
         pitch = p;

@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class MacroPitch extends Macro {
 
-    public MacroPitch(int[] values, int loopPoint, int releasePoint, int ident) {
+    private MacroPitch(int[] values, int loopPoint, int releasePoint, int ident) {
         super(values, loopPoint, releasePoint, ident);
     }
 
