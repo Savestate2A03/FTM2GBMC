@@ -1,4 +1,4 @@
-public class Note {
+class Note {
 
     private final String note;
     private final int octave;

@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class MacroVolume extends Macro {
 
-    public MacroVolume(int[] values, int loopPoint, int releasePoint, int ident) {
+    private MacroVolume(int[] values, int loopPoint, int releasePoint, int ident) {
         super(values, loopPoint, releasePoint, ident);
     }
 

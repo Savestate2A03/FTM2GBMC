@@ -34,21 +34,21 @@ public class Frame {
             int octave = -1;
             try {
                 instrument = Integer.parseInt(info[1], 16);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             try {
                 volume = Integer.parseInt(info[2], 16);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             if (note.equals("...")) {
                 note = "";
             } else if (note.charAt(2) == '#') {
-                note = note.substring(0, 2).replaceAll("\\-", "");
-                note = note.replaceAll("\\#", "+");
+                note = note.substring(0, 2).replaceAll("-", "");
+                note = note.replaceAll("#", "+");
             } else if (!note.equals("---") && !note.equals("===")) {
                 octave = Integer.parseInt(note.substring(2, 3));
-                note = note.substring(0, 2).replaceAll("\\-", "");
-                note = note.replaceAll("\\#", "+");
+                note = note.substring(0, 2).replaceAll("-", "");
+                note = note.replaceAll("#", "+");
             }
             String[] stringEffects = info[3].split("\\s+");
             Effect[] effects = Effect.effectsBuilder(stringEffects);

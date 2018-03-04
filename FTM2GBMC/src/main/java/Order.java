@@ -5,7 +5,7 @@ public class Order {
     private final int triangle;
     private final int noise;
 
-    public Order(int pulse1, int pulse2, int triangle, int noise) {
+    private Order(int pulse1, int pulse2, int triangle, int noise) {
         this.pulse1 = pulse1;
         this.pulse2 = pulse2;
         this.triangle = triangle;

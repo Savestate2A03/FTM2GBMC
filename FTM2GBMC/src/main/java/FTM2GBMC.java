@@ -6,33 +6,30 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
-public class FTM2GBMC {
+class FTM2GBMC {
 
     private final ArrayList<String> text;
     // Macros
-    ArrayList<MacroVolume> volumeMacros;
-    ArrayList<MacroArp> arpeggioMacros;
-    ArrayList<MacroPitch> pitchMacros;
-    ArrayList<MacroDuty> dutyMacros;
+    private ArrayList<MacroVolume> volumeMacros;
+    private ArrayList<MacroArp> arpeggioMacros;
+    private ArrayList<MacroPitch> pitchMacros;
+    private ArrayList<MacroDuty> dutyMacros;
     // Instruments
-    ArrayList<Instrument> instruments;
+    private ArrayList<Instrument> instruments;
     // Channels
-    ArrayList<Frame> pulse1;
-    ArrayList<Frame> pulse2;
-    ArrayList<Frame> triangle;
-    ArrayList<Frame> noise;
+    private ArrayList<Frame> pulse1;
+    private ArrayList<Frame> pulse2;
+    private ArrayList<Frame> triangle;
+    private ArrayList<Frame> noise;
     // List of Frames
-    ArrayList<Order> orders;
+    private ArrayList<Order> orders;
     // Song information
     private String songTitle;
     private String songAuthor;
     private String songCopyright;
-    private int songSpeed;
-    private int songTempo;
-    private int songBPM;
     private int gbmcTempo;
 
-    public FTM2GBMC(ArrayList<String> textImport) throws Exception {
+    private FTM2GBMC(ArrayList<String> textImport) throws Exception {
         this.text = textImport;
         init();
         information();
@@ -42,7 +39,7 @@ public class FTM2GBMC {
         buildInstruments();
     }
 
-    public static void printHelp() {
+    private static void printHelp() {
         System.out.println("usage: java -jar FTM2GBMC.jar [input] [output]");
     }
 
@@ -63,7 +60,7 @@ public class FTM2GBMC {
             System.out.print("[Open] FamiTracker text export --> ");
             input = sc.nextLine();
         }
-        input = input.replaceAll("\\\"", "");
+        input = input.replaceAll("\"", "");
         Charset encoding = Charset.defaultCharset();
         ArrayList<String> lines = (ArrayList<String>) Files.readAllLines(Paths.get(input), encoding);
         FTM2GBMC ftm2gbmc = new FTM2GBMC(lines);
@@ -152,9 +149,9 @@ public class FTM2GBMC {
     private boolean doesFrameExist(int num, ArrayList<Frame> frames) {
         for (Frame f : frames) {
             if (f.getIdentity() == num)
-                return true;
+                return false;
         }
-        return false;
+        return true;
     }
 
     private Frame getFrameById(int num, ArrayList<Frame> frames) {
@@ -209,13 +206,13 @@ public class FTM2GBMC {
         System.out.println("Building frame list...");
         for (Order o : orders) {
             // Pulse 1 frames
-            if (!doesFrameExist(o.getPulse1(), pulse1))
+            if (doesFrameExist(o.getPulse1(), pulse1))
                 pulse1.add(Frame.frameBuilder(0, o.getPulse1(), text));
-            if (!doesFrameExist(o.getPulse2(), pulse2))
+            if (doesFrameExist(o.getPulse2(), pulse2))
                 pulse2.add(Frame.frameBuilder(1, o.getPulse2(), text));
-            if (!doesFrameExist(o.getTriangle(), triangle))
+            if (doesFrameExist(o.getTriangle(), triangle))
                 triangle.add(Frame.frameBuilder(2, o.getTriangle(), text));
-            if (!doesFrameExist(o.getNoise(), noise))
+            if (doesFrameExist(o.getNoise(), noise))
                 noise.add(Frame.frameBuilder(3, o.getNoise(), text));
         }
         System.out.println("...built " + (
@@ -244,7 +241,7 @@ public class FTM2GBMC {
         songTitle = firstFoundLine("TITLE");
         songTitle = songTitle.split("\\s+", 2)[1];
         songTitle = songTitle.substring(1, songTitle.length() - 1);
-        songTitle = songTitle.replaceAll("\\\"\\\"", "\"");
+        songTitle = songTitle.replaceAll("\"\"", "\"");
         songAuthor = firstFoundLine("AUTHOR");
         songAuthor = songAuthor.split("\\s+")[1];
         songAuthor = songAuthor.substring(1, songAuthor.length() - 1);
@@ -254,9 +251,9 @@ public class FTM2GBMC {
         String trackInfo = firstFoundLine("TRACK");
         //TRACK 128   2 135 "New song"
         String[] info = trackInfo.split("\\s+");
-        songSpeed = Integer.parseInt(info[2]);
-        songTempo = Integer.parseInt(info[3]);
-        songBPM = songTempo * 6 / songSpeed;
+        int songSpeed = Integer.parseInt(info[2]);
+        int songTempo = Integer.parseInt(info[3]);
+        int songBPM = songTempo * 6 / songSpeed;
         System.out.println("Detected FTM Information:");
         System.out.println(" [Song]      " + songTitle);
         System.out.println(" [Author]    " + songAuthor);
@@ -285,40 +282,38 @@ public class FTM2GBMC {
         return this.text.get(index);
     }
 
-    public String build() throws Exception {
-        StringBuilder sb = new StringBuilder();
-        sb.append("; ============================\n");
-        sb.append("; FILE GENERATED WITH FTM2GBMC\n");
-        sb.append("; ============================\n");
-        sb.append("; FTM2GBMC created by Savestate!\n\n");
-        sb.append("; -- INFO --\n");
-        sb.append("#TITLE \"").append(songTitle.replaceAll("\\\"", "''")).append("\"\n");
-        sb.append("#AUTHOR \"").append(songAuthor.replaceAll("\\\"", "''")).append("\"\n");
-        sb.append("#COPYRIGHT \"").append(songCopyright.replaceAll("\\\"", "''")).append("\"\n\n");
-        sb.append("; -- WAVE Macros --\n");
-        sb.append("#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n");
-        sb.append("; -- Export Mode --\n");
-        sb.append("; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n");
-        sb.append("#mode 0\n\n");
-        sb.append("; -- Volume Macros --\n");
-        sb.append(sb_MacroVolume()).append("\n");
-        sb.append("#V127 {15,\\} ; Default Macro\n");
-        sb.append("; -- Duty Cycle Macros --\n");
-        sb.append(sb_MacroDuty()).append("\n");
-        sb.append("#X127 {0,\\} ; Default Macro\n");
-        sb.append("; -- Pitch Macros --\n");
-        sb.append(sb_MacroPitch()).append("\n");
-        sb.append("#F127 {0,\\} ; Default Macro\n");
-        sb.append("; -- Tempo --\n");
-        sb.append("'ABCD t128 T").append(gbmcTempo).append("\n\n");
-        sb.append(sb_PulseChannel(0));
-        sb.append("\n\n");
-        sb.append(sb_PulseChannel(1));
-        sb.append("\n\n");
-        sb.append(sb_TriangleChannel());
-        sb.append("\n\n");
-        sb.append(sb_NoiseChannel());
-        return sb.toString();
+    private String build() throws Exception {
+        return "; ============================\n" +
+                "; FILE GENERATED WITH FTM2GBMC\n" +
+                "; ============================\n" +
+                "; FTM2GBMC created by Savestate!\n\n" +
+                "; -- INFO --\n" +
+                "#TITLE \"" + songTitle.replaceAll("\"", "''") + "\"\n" +
+                "#AUTHOR \"" + songAuthor.replaceAll("\"", "''") + "\"\n" +
+                "#COPYRIGHT \"" + songCopyright.replaceAll("\"", "''") + "\"\n\n" +
+                "; -- WAVE Macros --\n" +
+                "#@0 {0123456789ABCDEFFEDCBA9876543210} ;Triangle Wave\n\n" +
+                "; -- Export Mode --\n" +
+                "; [0]gbs [1]bin [2]gbs+bin [3]gbdsp [4]dbdsp(dmg)\n" +
+                "#mode 0\n\n" +
+                "; -- Volume Macros --\n" +
+                sb_MacroVolume() + "\n" +
+                "#V127 {15,\\} ; Default Macro\n" +
+                "; -- Duty Cycle Macros --\n" +
+                sb_MacroDuty() + "\n" +
+                "#X127 {0,\\} ; Default Macro\n" +
+                "; -- Pitch Macros --\n" +
+                sb_MacroPitch() + "\n" +
+                "#F127 {0,\\} ; Default Macro\n" +
+                "; -- Tempo --\n" +
+                "'ABCD t128 T" + gbmcTempo + "\n\n" +
+                sb_PulseChannel(0) +
+                "\n\n" +
+                sb_PulseChannel(1) +
+                "\n\n" +
+                sb_TriangleChannel() +
+                "\n\n" +
+                sb_NoiseChannel();
     }
 
     private StringBuilder sb_PulseChannel(int channel) throws Exception {
@@ -559,7 +554,7 @@ public class FTM2GBMC {
         return sb;
     }
 
-    private StringBuilder sb_TriangleChannel() throws Exception {
+    private StringBuilder sb_TriangleChannel() {
         ArrayList<Frame> frames = triangle;
         StringBuilder sb = new StringBuilder();
         char chan = 'C';
@@ -731,7 +726,7 @@ public class FTM2GBMC {
         return sb;
     }
 
-    private StringBuilder sb_NoiseChannel() throws Exception {
+    private StringBuilder sb_NoiseChannel() {
         ArrayList<Frame> frames = noise;
         char chan = 'D';
         StringBuilder sb = new StringBuilder();
@@ -991,18 +986,18 @@ public class FTM2GBMC {
     }
 
     private String getNoteLength(int length) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            s = s + "64^";
+            s.append("64^");
         }
-        s = s.replaceAll("64\\^64\\^", "32^");
-        s = s.replaceAll("32\\^32\\^", "16^");
-        s = s.replaceAll("16\\^16\\^", "8^");
-        s = s.replaceAll("8\\^8\\^", "4^");
-        s = s.replaceAll("4\\^4\\^", "2^");
-        s = s.replaceAll("2\\^2\\^", "1^");
-        s = s.substring(0, s.length() - 1);
-        return s;
+        s = new StringBuilder(s.toString().replaceAll("64\\^64\\^", "32^"));
+        s = new StringBuilder(s.toString().replaceAll("32\\^32\\^", "16^"));
+        s = new StringBuilder(s.toString().replaceAll("16\\^16\\^", "8^"));
+        s = new StringBuilder(s.toString().replaceAll("8\\^8\\^", "4^"));
+        s = new StringBuilder(s.toString().replaceAll("4\\^4\\^", "2^"));
+        s = new StringBuilder(s.toString().replaceAll("2\\^2\\^", "1^"));
+        s = new StringBuilder(s.substring(0, s.length() - 1));
+        return s.toString();
     }
 
     private StringBuilder sb_MacroVolume() {

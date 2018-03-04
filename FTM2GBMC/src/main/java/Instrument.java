@@ -5,9 +5,9 @@ public class Instrument {
     private final int pitch;
     private final int duty;
     private final int ident;
-    String name;
+    private final String name;
 
-    public Instrument(int v, int a, int p, int d, int i, String n) {
+    private Instrument(int v, int a, int p, int d, int i, String n) {
         volume = v;
         arp = a;
         pitch = p;
@@ -27,7 +27,7 @@ public class Instrument {
         int a = Integer.parseInt(split[3]);
         int p = Integer.parseInt(split[4]);
         int d = Integer.parseInt(split[6]);
-        return new Instrument(v, a, p, d, i, split[7].replaceAll("\\\"", ""));
+        return new Instrument(v, a, p, d, i, split[7].replaceAll("\"", ""));
     }
 
     public int getVolume() {
@@ -56,13 +56,11 @@ public class Instrument {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(name).append(" --> ");
-        sb.append("V:").append(volume).append(' ');
-        sb.append("A:").append(arp).append(' ');
-        sb.append("P:").append(pitch).append(' ');
-        sb.append("D:").append(duty);
-        return sb.toString();
+        return name + " --> " +
+                "V:" + volume + ' ' +
+                "A:" + arp + ' ' +
+                "P:" + pitch + ' ' +
+                "D:" + duty;
     }
 
 }

@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class MacroDuty extends Macro {
 
-    public MacroDuty(int[] values, int loopPoint, int releasePoint, int ident) {
+    private MacroDuty(int[] values, int loopPoint, int releasePoint, int ident) {
         super(values, loopPoint, releasePoint, ident);
     }
 

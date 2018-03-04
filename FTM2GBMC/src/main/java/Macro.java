@@ -1,11 +1,11 @@
-public class Macro {
+class Macro {
 
     private final int[] values;
     private final int loopPoint;
     private final int releasePoint;
     private final int ident;
 
-    public Macro(int[] values, int loopPoint, int releasePoint, int ident) {
+    Macro(int[] values, int loopPoint, int releasePoint, int ident) {
         this.values = values;
         this.loopPoint = loopPoint;
         this.releasePoint = releasePoint;
