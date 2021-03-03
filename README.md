@@ -22,7 +22,7 @@ java -jar FTM2GBMC.jar [input [output]]
 - Game Boy Music Compiler [→](http://www.geocities.jp/submarine600/html/sounddriver.html)
 - FamiTracker [→](http://www.famitracker.com/)
 
-You can build the software using NetBeans or you can download a precompiled version on the Battle of the Bits dev thread [here](http://battleofthebits.org/academy/GroupThread/12151/FTM2GBMC+-+Make+Gameboy+Music+in+FamiTracker%21/)! *(not guaranteed to be up-to-date)*
+You can build the software using NetBeans or you can download a precompiled version in the GitHub releases panel.
 
 ## FamiTracker Module Specifications
 
